@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: "Please cite the accompanying manuscript and identify the release or repository commit used."
+type: software
+title: "Hilbert and UMD constants: Lean formalization"
+version: 1.0.0
+date-released: 2026-09-09
+repository-code: "https://github.com/elorist/UMD_Hilberttransform"
+license: Apache-2.0
+abstract: >-
+  Lean 4 formalization of the p = 2 separation theorem for Hilbert transform
+  and UMD constants over the real and complex fields, with explicit
+  quantitative bounds, sample-space universe independence, and proof audits.
+keywords:
+  - Lean 4
+  - Mathlib
+  - formalization
+  - Hilbert transform
+  - UMD spaces
+  - martingales
+authors:
+  - family-names: Lorist
+    given-names: Emiel
+  - family-names: van Neerven
+    given-names: Jan
+preferred-citation:
+  type: unpublished
+  title: "The bounds hbar(p,X) ≲ beta(p,X)^2 and beta(p,X) ≲ hbar(p,X)^2 are sharp"
+  authors:
+    - family-names: Lorist
+      given-names: Emiel
+    - family-names: van Neerven
+      given-names: Jan
+  year: 2026
+  notes: "Manuscript prepared for arXiv v1 (9 September 2026), included as paper/Hilbert-and-UMD-arxiv-v1.pdf under CC BY 4.0. The Lean certification target is Theorem 1.1."

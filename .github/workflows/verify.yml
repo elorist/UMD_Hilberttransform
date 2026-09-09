@@ -1,0 +1,59 @@
+name: Verify
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Lean and repository audit (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    env:
+      LEAN_NUM_THREADS: '2'
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check repository contents
+        run: python scripts/check_repo.py
+      - name: Test the repository checker
+        run: python -m unittest discover -s tests -p "test_*.py"
+      - name: Restore project build cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          # Archiving Lean and Mathlib as well can exhaust the runner's disk.
+          path: .lake/build
+          key: lean-project-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json', 'lakefile.toml', 'scripts/bootstrap.*', 'scripts/lean-env.ps1') }}-${{ github.sha }}
+          restore-keys: |
+            lean-project-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json', 'lakefile.toml', 'scripts/bootstrap.*', 'scripts/lean-env.ps1') }}-
+      - name: Bootstrap and verify on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./scripts/bootstrap.ps1
+      - name: Bootstrap and verify on Linux
+        if: runner.os == 'Linux'
+        shell: bash
+        run: bash scripts/bootstrap.sh
+      - name: Save verification reports
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: verification-${{ runner.os }}
+          path: .lake/verification/
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 14

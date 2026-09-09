@@ -1,0 +1,32 @@
+# Local dependencies, tools, and development artifacts.
+/.lake/
+/.tools/
+/scratch/
+/tmp/
+/output/
+# Completed one-time migration, retained only on this computer.
+/scripts/move-reusable-storage.ps1
+__pycache__/
+*.pyc
+
+# Generated Lean and LaTeX files.
+*.olean
+*.ilean
+*.trace
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.synctex*
+*.fls
+*.fdb_latexmk
+
+# Machine settings and credentials.
+.DS_Store
+Thumbs.db
+.env
+.env.*
+*.key
+*.pem
+*conflicted copy*

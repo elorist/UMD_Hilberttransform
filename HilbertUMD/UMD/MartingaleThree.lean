@@ -1,6 +1,10 @@
-import HilbertUMD.Analysis.MixedNorm
-import HilbertUMD.UMD.MartingaleProducts
-import Mathlib.Analysis.InnerProductSpace.PiL2
+module
+
+public import HilbertUMD.Analysis.MixedNorm
+public import HilbertUMD.UMD.MartingaleProducts
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+
+@[expose] public section
 
 /-!
 # The cubic Hilbert-valued dyadic martingale inequality

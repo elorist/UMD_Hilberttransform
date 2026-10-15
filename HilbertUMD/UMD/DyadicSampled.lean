@@ -1,4 +1,8 @@
-import HilbertUMD.UMD.DyadicTerminal
+module
+
+public import HilbertUMD.UMD.DyadicTerminal
+
+@[expose] public section
 
 /-! Dyadic terminal bounds with suppressed and grouped levels. -/
 
@@ -116,14 +120,14 @@ theorem coefficients_zero_or_unit {m : ℕ} (r : Fin (m + 1) → ℕ)
       rw [Finset.sum_eq_single k]
       · simp [hk]
       · intro l _ hl
-        exact if_neg (fun h => hl (hunique l h))
+        exact ite_eq_right (fun h => hl (hunique l h))
       · simp
     rw [heq]
     exact hε k
   · left
     apply Finset.sum_eq_zero
     intro k _
-    exact if_neg (fun hk => hx ⟨k, hk⟩)
+    exact ite_eq_right (fun hk => hx ⟨k, hk⟩)
 
 theorem sum_coefficients {m d : ℕ} (r : Fin (m + 1) → ℕ)
     (hr : Monotone r) (hd : ∀ k, r k ≤ d) (ε : Fin m → 𝕜) (v : ℕ → F) :

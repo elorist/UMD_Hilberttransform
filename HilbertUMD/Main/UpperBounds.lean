@@ -1,4 +1,8 @@
-import HilbertUMD.Matrices.SignedDyadicUpper
+module
+
+public import HilbertUMD.Matrices.SignedDyadicUpper
+
+@[expose] public section
 
 /-! Actual sharp graph-space upper bounds, derived from the proved matrix
 bounds. The scalar analytic interfaces and both matrix bounds are proved. -/

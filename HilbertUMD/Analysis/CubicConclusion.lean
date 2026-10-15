@@ -1,5 +1,9 @@
-import HilbertUMD.Analysis.CubicInterpolation
-import HilbertUMD.Analysis.CubicDual
+module
+
+public import HilbertUMD.Analysis.CubicInterpolation
+public import HilbertUMD.Analysis.CubicDual
+
+@[expose] public section
 
 /-!
 # The compatible-operator L² consequence of the cubic lemma

@@ -1,7 +1,11 @@
-import Mathlib.Probability.Martingale.Basic
-import Mathlib.MeasureTheory.Function.LpSpace.Basic
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-import Mathlib.Tactic
+module
+
+public import Mathlib.Probability.Martingale.Basic
+public import Mathlib.MeasureTheory.Function.LpSpace.Basic
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+public import Mathlib.Tactic
+
+@[expose] public section
 
 /-!
 # Finite Lp martingales and operator UMD bounds
@@ -137,8 +141,15 @@ theorem martingaleTransform_memLp [MeasurableSpace Ω] {μ : Measure Ω} {p : �
 theorem eLpNorm_map_le [MeasurableSpace Ω] (T : E →L[𝕜] F)
     (f : Ω → E) (p : ℝ≥0∞) (μ : Measure Ω) :
     eLpNorm (fun x => T (f x)) p μ ≤ (‖T‖₊ : ℝ≥0∞) * eLpNorm f p μ := by
-  exact eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul
-    (Eventually.of_forall fun x => T.le_opNNNorm (f x)) p
+  by_cases hf : AEStronglyMeasurable f μ
+  · exact eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul
+      (T.continuous.comp_aestronglyMeasurable hf)
+      (Eventually.of_forall fun x => T.le_opNNNorm (f x)) p
+  rw [eLpNorm_of_not_aestronglyMeasurable hf]
+  by_cases hT : T = 0
+  · simp [hT]
+  · rw [ENNReal.mul_top (by simpa using hT)]
+    exact le_top
 
 end Transforms
 

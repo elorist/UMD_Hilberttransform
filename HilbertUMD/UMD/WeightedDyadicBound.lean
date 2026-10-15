@@ -1,4 +1,8 @@
-import HilbertUMD.UMD.DyadicProbabilityApproximation
+module
+
+public import HilbertUMD.UMD.DyadicProbabilityApproximation
+
+@[expose] public section
 
 /-! The uniform dyadic bound extends to every finite weighted binary tree. -/
 

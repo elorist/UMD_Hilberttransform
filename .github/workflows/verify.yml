@@ -20,7 +20,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 90
+    timeout-minutes: 120
     env:
       LEAN_NUM_THREADS: '2'
     steps:
@@ -48,6 +48,30 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
         run: bash scripts/bootstrap.sh
+      - name: Install the comparator sandbox on Linux
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          sudo apt-get update -qq >/dev/null
+          sudo apt-get install -y -qq bubblewrap >/dev/null
+          # Ubuntu's AppArmor restriction prevents bubblewrap user namespaces.
+          # This setting affects only the disposable GitHub runner.
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+      - name: Verify Theorem 1.1 with Comparator, NanoDa, and con-ron
+        if: runner.os == 'Linux'
+        shell: bash
+        run: bash scripts/verify-comparator.sh
+      - name: Record Linux disk usage
+        if: always() && runner.os == 'Linux'
+        shell: bash
+        run: |
+          mkdir -p .lake/verification
+          df -h . /tmp | tee .lake/verification/disk.log
+          for directory in .lake/build .lake/packages .tools; do
+            if [[ -d "$directory" ]]; then
+              du -sh "$directory" | tee -a .lake/verification/disk.log
+            fi
+          done
       - name: Save verification reports
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

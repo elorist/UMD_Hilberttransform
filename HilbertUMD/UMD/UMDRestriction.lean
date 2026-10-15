@@ -1,4 +1,8 @@
-import HilbertUMD.UMD.UMD
+module
+
+public import HilbertUMD.UMD.UMD
+
+@[expose] public section
 
 /-!
 # Restricting UMD bounds to real subspaces
@@ -58,10 +62,16 @@ theorem UMDBound.of_isometric_intertwining
   rw [ht, hd] at h
   have hnK : eLpNorm (fun x => K (martingaleTransform T ε f x)) p μ =
       eLpNorm (martingaleTransform T ε f) p μ :=
-    eLpNorm_congr_norm_ae (Eventually.of_forall fun x => K.norm_map _)
+    eLpNorm_congr_norm_ae
+      (K.continuous.comp_aestronglyMeasurable (martingaleTransform_memLp T ε hf.memLp).aestronglyMeasurable)
+      (martingaleTransform_memLp T ε hf.memLp).aestronglyMeasurable
+      (Eventually.of_forall fun x => K.norm_map _)
   have hnJ : eLpNorm (fun x => J (differenceSum f x)) p μ =
       eLpNorm (differenceSum f) p μ :=
-    eLpNorm_congr_norm_ae (Eventually.of_forall fun x => J.norm_map _)
+    eLpNorm_congr_norm_ae
+      (J.continuous.comp_aestronglyMeasurable (differenceSum_memLp hf.memLp).aestronglyMeasurable)
+      (differenceSum_memLp hf.memLp).aestronglyMeasurable
+      (Eventually.of_forall fun x => J.norm_map _)
   rwa [hnK, hnJ] at h
 
 end HilbertUMD

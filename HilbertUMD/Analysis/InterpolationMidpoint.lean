@@ -1,6 +1,10 @@
-import Mathlib.Analysis.Complex.Hadamard
-import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-import HilbertUMD.Analysis.CubicLp
+module
+
+public import Mathlib.Analysis.Complex.Hadamard
+public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+public import HilbertUMD.Analysis.CubicLp
+
+@[expose] public section
 
 /-!
 # Bilinear interpolation at the midpoint of 3/2 and 3
@@ -157,11 +161,12 @@ theorem norm_family (μ : Measure S) (p : ℝ≥0∞) [Fact (1 ≤ p)]
   rw [Lp.norm_def]
   have he : eLpNorm (family μ p hp hp' f hf z) p μ =
       eLpNorm (fun x => ‖f x‖ ^ ((4 - 2 * z.re) / 3)) p μ := by
-    apply eLpNorm_congr_norm_ae
+    apply eLpNorm_congr_norm_ae (Lp.memLp _).aestronglyMeasurable
+      (f.stronglyMeasurable.aestronglyMeasurable.norm.aemeasurable.pow_const _).aestronglyMeasurable
     filter_upwards [coeFn_family μ p hp hp' f hf z] with x hx
     rw [hx, norm_weight_smul _ _ hz, Real.norm_eq_abs,
       abs_of_nonneg (Real.rpow_nonneg (norm_nonneg _) _)]
-  rw [he, eLpNorm_norm_rpow _ hr, ENNReal.toReal_rpow]
+  rw [he, eLpNorm_norm_rpow _ f.stronglyMeasurable.aestronglyMeasurable hr, ENNReal.toReal_rpow]
 
 theorem norm_family_left (μ : Measure S) (f : SimpleFunc S E) (hf : f.FinMeasSupp μ)
     (z : ℂ) (hz : z.re = 0) :

@@ -1,6 +1,10 @@
-import HilbertUMD.Interfaces.HilbertLpAnalysis
-import HilbertUMD.Interfaces.HilbertPV
-import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
+module
+
+public import HilbertUMD.Interfaces.HilbertLpAnalysis
+public import HilbertUMD.Interfaces.HilbertPV
+public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
+
+@[expose] public section
 
 /-!
 Compatible scalar L2, L3 and L(3/2) Hilbert realizations on R.

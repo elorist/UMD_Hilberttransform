@@ -1,5 +1,9 @@
-import HilbertUMD.Hilbert.HilbertConstant
-import HilbertUMD.Hilbert.HilbertL2Naturality
+module
+
+public import HilbertUMD.Hilbert.HilbertConstant
+public import HilbertUMD.Hilbert.HilbertL2Naturality
+
+@[expose] public section
 
 /-!
 # Finite-dimensional complex reconstruction of principal values

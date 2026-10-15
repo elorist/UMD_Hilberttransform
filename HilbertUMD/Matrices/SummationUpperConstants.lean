@@ -1,4 +1,8 @@
-import HilbertUMD.Matrices.SummationUpper
+module
+
+public import HilbertUMD.Matrices.SummationUpper
+
+@[expose] public section
 
 /-! Separate real and complex summation estimates with the coefficients
 proved in Lean. These differ from Remark 1.2 of the fixed paper. -/

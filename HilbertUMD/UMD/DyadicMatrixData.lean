@@ -1,5 +1,9 @@
-import HilbertUMD.UMD.DyadicLpOperators
-import HilbertUMD.Matrices.MatrixScalarData
+module
+
+public import HilbertUMD.UMD.DyadicLpOperators
+public import HilbertUMD.Matrices.MatrixScalarData
+
+@[expose] public section
 
 /-! The actual finite dyadic operators supply the scalar analytic input for
 the common matrix energy argument, using the checked martingale product

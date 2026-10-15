@@ -1,5 +1,9 @@
-import HilbertUMD.Matrices.MatrixCubic
-import HilbertUMD.Analysis.CubicLp
+module
+
+public import HilbertUMD.Matrices.MatrixCubic
+public import HilbertUMD.Analysis.CubicLp
+
+@[expose] public section
 
 /-! Actual Bochner Lp realizations of the tree block data. -/
 

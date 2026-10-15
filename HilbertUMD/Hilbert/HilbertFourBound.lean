@@ -1,5 +1,9 @@
-import HilbertUMD.Hilbert.CotlarFourier
-import Mathlib.Analysis.Normed.Operator.Extend
+module
+
+public import HilbertUMD.Hilbert.CotlarFourier
+public import Mathlib.Analysis.Normed.Operator.Extend
+
+@[expose] public section
 
 /-!
 # An independent scalar L4 estimate
@@ -19,30 +23,31 @@ private instance : ENNReal.HolderTriple 4 4 2 := ⟨by
   apply (ENNReal.toReal_eq_toReal_iff' (by norm_num) (by simp)).mp
   norm_num [ENNReal.toReal_add]⟩
 
-theorem eLpNorm_square (f : ℝ → ℂ) :
+theorem eLpNorm_square (f : ℝ → ℂ) (hf : AEStronglyMeasurable f volume) :
     eLpNorm (fun x => f x * f x) 2 volume = (eLpNorm f 4 volume) ^ 2 := by
   calc
     _ = eLpNorm (fun x => ‖f x‖ ^ (2 : ℝ)) 2 volume := by
-      apply eLpNorm_congr_norm_ae
+      apply eLpNorm_congr_norm_ae (hf.mul hf)
+        ((show Continuous (fun z : ℂ => ‖z‖ ^ (2 : ℝ)) by fun_prop).comp_aestronglyMeasurable hf)
       filter_upwards with x
       simp [norm_mul, pow_two]
     _ = _ := by
-      rw [eLpNorm_norm_rpow _ (by norm_num)]
+      rw [eLpNorm_norm_rpow _ hf (by norm_num)]
       norm_num [ENNReal.rpow_two]
 
 theorem memLp_four_of_square {f : ℝ → ℂ} (hf : AEStronglyMeasurable f volume)
     (hff : MemLp (fun x => f x * f x) 2 volume) : MemLp f 4 volume := by
-  refine ⟨hf, ?_⟩
-  have h := hff.2
-  rw [eLpNorm_square] at h
+  have h := hff
+  rw [MemLp, eLpNorm_square f hf] at h
+  change eLpNorm f 4 volume < ∞
   simpa only [ENNReal.pow_lt_top_iff, show (2 : ℕ) ≠ 0 by norm_num, or_false] using h
 
 /-- Cotlar's identity supplies L4 membership before any L4 norm is used. -/
 theorem hilbert_schwartz_memLp_four (u : SchwartzMap ℝ ℂ) :
     MemLp (fun x => hilbertL2 (u.toLp 2) x) 4 volume := by
   obtain ⟨W, _, hHW⟩ := CotlarFourier.complex_schwartz u u
-  have hu : MemLp (fun x => u x * u x) 2 volume := (u.memLp 4).mul' (u.memLp 4)
-  apply memLp_four_of_square (Lp.memLp _).1
+  have hu : MemLp (fun x => u x * u x) 2 volume := (u.memLp 4).fun_mul (u.memLp 4)
+  apply memLp_four_of_square (Lp.aestronglyMeasurable _)
   apply ((Lp.memLp (hilbertL2 W)).add hu).ae_eq
   filter_upwards [hHW] with x hx
   simp only [Pi.add_apply]
@@ -73,8 +78,6 @@ theorem hilbert_schwartz_eLpNorm_four_le (u : SchwartzMap ℝ ℂ) :
   let h : ℝ → ℂ := hilbertL2 (u.toLp 2)
   have hh : MemLp h 4 volume := hilbert_schwartz_memLp_four u
   have hu : MemLp u 4 volume := u.memLp 4
-  have hprod : MemLp (fun x => u x * h x) 2 volume := hh.mul' hu
-  have huu : MemLp (fun x => u x * u x) 2 volume := hu.mul' hu
   obtain ⟨W, hW, hHW⟩ := CotlarFourier.complex_schwartz u u
   have hWnorm : eLpNorm (fun x => W x) 2 volume ≤
       2 * (eLpNorm u 4 volume * eLpNorm h 4 volume) := by
@@ -83,19 +86,20 @@ theorem hilbert_schwartz_eLpNorm_four_le (u : SchwartzMap ℝ ℂ) :
     calc
       _ ≤ eLpNorm (fun x => u x * h x) 2 volume +
           eLpNorm (fun x => u x * h x) 2 volume :=
-        eLpNorm_add_le hprod.1 hprod.1 (by norm_num)
+        eLpNorm_add_le (by norm_num)
       _ ≤ _ := by
         have hp : eLpNorm (fun x => u x * h x) 2 volume ≤
             eLpNorm u 4 volume * eLpNorm h 4 volume :=
           by
             simpa only [ENNReal.coe_one, one_mul] using
-              (eLpNorm_le_eLpNorm_mul_eLpNorm'_of_norm (p := 4) (q := 4) (r := 2)
-                hu.1 hh.1 (fun a b : ℂ => a * b) 1
+              (eLpNorm_le_eLpNorm_mul_eLpNorm_of_norm (p := 4) (q := 4) (r := 2)
+                (fun a b : ℂ => a * b) 1 (by fun_prop)
+                hu.aestronglyMeasurable hh.aestronglyMeasurable
                 (Eventually.of_forall fun x => by simp only [norm_mul, NNReal.coe_one, one_mul]; rfl))
         simpa only [two_mul] using add_le_add hp hp
   have hsquare : (eLpNorm h 4 volume) ^ 2 ≤
       2 * (eLpNorm u 4 volume * eLpNorm h 4 volume) + (eLpNorm u 4 volume) ^ 2 := by
-    rw [← eLpNorm_square]
+    rw [← eLpNorm_square h hh.aestronglyMeasurable]
     have he : (fun x => h x * h x) =ᵐ[volume]
         (fun x => hilbertL2 W x) + (fun x => u x * u x) := by
       filter_upwards [hHW] with x hx
@@ -106,9 +110,10 @@ theorem hilbert_schwartz_eLpNorm_four_le (u : SchwartzMap ℝ ℂ) :
     calc
       _ ≤ eLpNorm (fun x => hilbertL2 W x) 2 volume +
           eLpNorm (fun x => u x * u x) 2 volume :=
-        eLpNorm_add_le (Lp.memLp _).1 huu.1 (by norm_num)
+        eLpNorm_add_le (by norm_num)
       _ = eLpNorm (fun x => W x) 2 volume + (eLpNorm u 4 volume) ^ 2 := by
-        rw [eLpNorm_square, ← Lp.enorm_def, ← Lp.enorm_def, hilbertL2.enorm_map]
+        rw [eLpNorm_square u hu.aestronglyMeasurable,
+          ← Lp.enorm_def, ← Lp.enorm_def, hilbertL2.enorm_map]
       _ ≤ _ := add_le_add hWnorm le_rfl
   exact le_five_halves_of_square hh.eLpNorm_ne_top hu.eLpNorm_ne_top hsquare
 
@@ -122,7 +127,7 @@ private theorem real_schwartz_ae (u : SchwartzMap ℝ ℝ) :
 theorem realHilbert_schwartz_memLp_four (u : SchwartzMap ℝ ℝ) :
     MemLp (fun x => realHilbertL2 (u.toLp 2) x) 4 volume := by
   apply (hilbert_schwartz_memLp_four (u.postcompCLM Complex.ofRealCLM)).congr_norm
-    (Lp.memLp _).1
+    (Lp.aestronglyMeasurable _)
   filter_upwards [real_schwartz_ae u] with x hx
   rw [hx, Complex.norm_real]
 
@@ -132,11 +137,13 @@ theorem realHilbert_schwartz_eLpNorm_four_le (u : SchwartzMap ℝ ℝ) :
       (5 / 2) * eLpNorm u 4 volume := by
   have hout : eLpNorm (fun x => hilbertL2 ((u.postcompCLM Complex.ofRealCLM).toLp 2) x)
       4 volume = eLpNorm (fun x => realHilbertL2 (u.toLp 2) x) 4 volume := by
-    apply eLpNorm_congr_norm_ae
+    apply eLpNorm_congr_norm_ae (Lp.aestronglyMeasurable _) (Lp.aestronglyMeasurable _)
     filter_upwards [real_schwartz_ae u] with x hx
     rw [hx, Complex.norm_real]
   have hin : eLpNorm (u.postcompCLM Complex.ofRealCLM) 4 volume = eLpNorm u 4 volume := by
     apply eLpNorm_congr_norm_ae
+      (u.postcompCLM Complex.ofRealCLM).continuous.aestronglyMeasurable
+      u.continuous.aestronglyMeasurable
     exact Eventually.of_forall fun x => by simp
   simpa only [hout, hin] using hilbert_schwartz_eLpNorm_four_le (u.postcompCLM Complex.ofRealCLM)
 

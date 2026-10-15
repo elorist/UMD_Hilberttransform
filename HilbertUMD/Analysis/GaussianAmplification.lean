@@ -1,6 +1,10 @@
-import HilbertUMD.Analysis.MixedNorm
-import Mathlib.MeasureTheory.Function.LpSpace.Basic
-import Mathlib.Probability.Distributions.Gaussian.Multivariate
+module
+
+public import HilbertUMD.Analysis.MixedNorm
+public import Mathlib.MeasureTheory.Function.LpSpace.Basic
+public import Mathlib.Probability.Distributions.Gaussian.Multivariate
+
+@[expose] public section
 
 /-! Norm-preserving finite Hilbert-space amplification on real L3, proved by
 Gaussian averaging and Tonelli's theorem. -/
@@ -12,10 +16,10 @@ open scoped ENNReal NNReal BigOperators RealInnerProductSpace
 namespace HilbertUMD
 
 private theorem eLpNorm_three_pow {Ω E : Type*} [MeasurableSpace Ω]
-    [NormedAddCommGroup E] (μ : Measure Ω) (f : Ω → E) :
+    [NormedAddCommGroup E] (μ : Measure Ω) (f : Ω → E) (hf : AEStronglyMeasurable f μ) :
     eLpNorm f 3 μ ^ 3 = ∫⁻ t, ‖f t‖ₑ ^ 3 ∂μ := by
   simpa using (eLpNorm_nnreal_pow_eq_lintegral (f := f) (μ := μ)
-    (p := (3 : ℝ≥0)) (by norm_num))
+    (p := (3 : ℝ≥0)) (by norm_num) hf)
 
 private theorem gaussian_inner_eLpNorm {E : Type*} [NormedAddCommGroup E]
     [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E]
@@ -42,7 +46,7 @@ private theorem gaussian_inner_eLpNorm {E : Type*} [NormedAddCommGroup E]
 private theorem gaussian_three_ne_zero :
     eLpNorm (id : ℝ → ℝ) 3 (gaussianReal 0 1) ≠ 0 := by
   intro h
-  have hzero := (eLpNorm_eq_zero_iff (by fun_prop) (by norm_num : (3 : ℝ≥0∞) ≠ 0)).mp h
+  have hzero := (eLpNorm_eq_zero_iff (by norm_num : (3 : ℝ≥0∞) ≠ 0)).mp h
   have hv := variance_congr hzero
   simp at hv
 
@@ -54,7 +58,7 @@ private theorem gaussian_average_three {ι : Type*} [Fintype ι]
       mixedNorm 3 2 volume (fun t i => f i t) ^ 3 *
         eLpNorm (id : ℝ → ℝ) 3 (gaussianReal 0 1) ^ 3 := by
   classical
-  conv_lhs => enter [2, y]; rw [eLpNorm_three_pow]
+  conv_lhs => enter [2, y]; rw [eLpNorm_three_pow _ _ (by fun_prop)]
   rw [lintegral_lintegral_swap]
   · have hpoint (t : ℝ) :
         (∫⁻ y : EuclideanSpace ℝ ι, ‖∑ i, f i t * y i‖ₑ ^ 3
@@ -63,14 +67,15 @@ private theorem gaussian_average_three {ι : Type*} [Fintype ι]
           eLpNorm (id : ℝ → ℝ) 3 (gaussianReal 0 1) ^ 3 := by
       have hx := congrArg (fun a : ℝ≥0∞ => a ^ 3)
         (gaussian_inner_eLpNorm (WithLp.toLp 2 (fun i => f i t) : EuclideanSpace ℝ ι))
-      rw [eLpNorm_three_pow] at hx
+      rw [eLpNorm_three_pow _ _ (by fun_prop)] at hx
       simpa only [mul_pow, EuclideanSpace.inner_eq_star_dotProduct,
         dotProduct, star_trivial, mul_comm (G := ℝ)] using hx
     simp_rw [hpoint]
     rw [lintegral_mul_const']
-    · rw [← eLpNorm_three_pow]
+    · rw [← eLpNorm_three_pow _ _ ((PiLp.continuous_toLp 2 (fun _ : ι => ℝ)).comp_aestronglyMeasurable
+        (Measurable.of_eval (fun i => (Lp.stronglyMeasurable (f i)).measurable)).aestronglyMeasurable)]
       rfl
-    · exact ENNReal.pow_ne_top (memLp_id_gaussianReal' 3 (by norm_num)).2.ne
+    · exact ENNReal.pow_ne_top (memLp_id_gaussianReal' 3 (by norm_num)).ne
   · exact (Finset.measurable_sum _ (fun i _ =>
       ((Lp.stronglyMeasurable (f i)).measurable.comp measurable_snd).mul
         ((by fun_prop : Measurable (fun y : EuclideanSpace ℝ ι => y i)).comp
@@ -118,7 +123,7 @@ theorem scalar_operator_hilbert_extension_three_lp {ι : Type*} [Fintype ι]
     gaussian_average_three, gaussian_average_three, ← mul_assoc] at havg
   have hc0 := pow_ne_zero 3 gaussian_three_ne_zero
   have hct := ENNReal.pow_ne_top (n := 3)
-    (memLp_id_gaussianReal' (μ := 0) (v := 1) 3 (by norm_num)).2.ne
+    (memLp_id_gaussianReal' (μ := 0) (v := 1) 3 (by norm_num)).ne
   have hpow := (ENNReal.mul_le_mul_iff_left hc0 hct).mp havg
   rw [← mul_pow] at hpow
   exact (ENNReal.pow_le_pow_left_iff (by norm_num : (3 : ℕ) ≠ 0)).mp hpow

@@ -1,4 +1,8 @@
-import HilbertUMD.Interfaces.HilbertPV
+module
+
+public import HilbertUMD.Interfaces.HilbertPV
+
+@[expose] public section
 
 /-!
 # Principal-value bounds from the constructed `L²` isometries

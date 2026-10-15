@@ -1,5 +1,9 @@
-import HilbertUMD.UMD.DyadicTerminal
-import HilbertUMD.Analysis.MixedNorm
+module
+
+public import HilbertUMD.UMD.DyadicTerminal
+public import HilbertUMD.Analysis.MixedNorm
+
+@[expose] public section
 
 /-! Actual independent signs on the uniform binary leaf space and the
 finite Rademacher estimates used in the martingale-product proof. -/

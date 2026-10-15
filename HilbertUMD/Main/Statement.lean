@@ -1,6 +1,10 @@
-import HilbertUMD.Hilbert.HilbertConstant
-import HilbertUMD.UMD.UMD
-import HilbertUMD.Foundations.Spaces
+module
+
+public import HilbertUMD.Hilbert.HilbertConstant
+public import HilbertUMD.UMD.UMD
+public import HilbertUMD.Foundations.Spaces
+
+@[expose] public section
 
 /-! Internal n+1 bounds and quantitative estimates. The literal n/sqrt(n)
 statement of the fixed paper is in Main/PaperStatement.lean. -/

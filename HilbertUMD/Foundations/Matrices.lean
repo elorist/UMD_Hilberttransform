@@ -1,4 +1,8 @@
-import HilbertUMD.Foundations.Dyadic
+module
+
+public import HilbertUMD.Foundations.Dyadic
+
+@[expose] public section
 
 noncomputable section
 open scoped BigOperators
@@ -234,7 +238,7 @@ theorem signedDyadic_le_hilbert (n : ℕ) (x : Vec 𝕜 n) :
 
 abbrev L1Vec (𝕜 : Type*) (n : ℕ) := PiLp 1 (fun _ : Leaf n => 𝕜)
 
-private theorem l1_operator_bound (n : ℕ) (T : Vec 𝕜 n →ₗ[𝕜] Vec 𝕜 n)
+theorem l1_operator_bound (n : ℕ) (T : Vec 𝕜 n →ₗ[𝕜] Vec 𝕜 n)
     (h : ∀ x i, ‖T x i‖ ≤ l1Norm n x) (x : L1Vec 𝕜 n) :
     ‖T (WithLp.ofLp x)‖ ≤ 1 * ‖x‖ := by
   rw [one_mul]

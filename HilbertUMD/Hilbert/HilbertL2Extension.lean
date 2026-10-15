@@ -1,5 +1,9 @@
-import HilbertUMD.Hilbert.HilbertTwoFromThreeHalves
-import HilbertUMD.Interfaces.HilbertThreeHalves
+module
+
+public import HilbertUMD.Hilbert.HilbertTwoFromThreeHalves
+public import HilbertUMD.Interfaces.HilbertThreeHalves
+
+@[expose] public section
 
 /-! Extension of a smooth-test Hilbert bound to finite-dimensional L2 inputs.
 The scalar PV input is the existing L(3/2) realization. All coordinate and
@@ -52,8 +56,8 @@ theorem kernel_integrable {f : ℝ → F} (hf : MemLp f 2 volume)
     {ε : ℝ} (hε : 0 < ε) (x : ℝ) :
     Integrable (fun y => (x-y)⁻¹ • f y)
       (volume.restrict {y : ℝ | ε < |x-y|}) := by
-  exact memLp_one_iff_integrable.mp ((hf.mono_measure Measure.restrict_le_self).smul
-    (hilbertKernel_memLp_two hε x) (r := 1))
+  exact memLp_one_iff_integrable.mp ((hilbertKernel_memLp_two hε x).smul
+    (hf.mono_measure Measure.restrict_le_self) (r := 1))
 
 theorem trunc_coord {f : ℝ → F} (hf : MemLp f 2 volume)
     {ε : ℝ} (hε : 0 < ε) (x : ℝ) (i : Fin (Module.finrank ℝ F)) :

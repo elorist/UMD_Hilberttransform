@@ -1,6 +1,10 @@
-import HilbertUMD.Hilbert.HilbertPVFourier
-import Mathlib.Analysis.Fourier.Convolution
-import Mathlib.MeasureTheory.Function.Holder
+module
+
+public import HilbertUMD.Hilbert.HilbertPVFourier
+public import Mathlib.Analysis.Fourier.Convolution
+public import Mathlib.MeasureTheory.Function.Holder
+
+@[expose] public section
 
 /-! The polarized Cotlar identity for the Fourier Hilbert transform. -/
 
@@ -30,7 +34,7 @@ theorem symbolMul_integrable {f : ℝ → ℂ} (hf : Integrable f) :
 
 theorem symbolMul_memLp {f : ℝ → ℂ} {p : ℝ≥0∞} (hf : MemLp f p) :
     MemLp (symbolMul f) p := by
-  apply hf.congr_norm (measurable_hilbertSymbol.aestronglyMeasurable.mul hf.1)
+  apply hf.congr_norm (measurable_hilbertSymbol.aestronglyMeasurable.mul hf.aestronglyMeasurable)
   exact .of_forall fun x => by simp
 
 def conv (f g : ℝ → ℂ) : ℝ → ℂ := f ⋆[ContinuousLinearMap.mul ℂ ℂ] g

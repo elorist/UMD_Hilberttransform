@@ -1,7 +1,11 @@
-import HilbertUMD.Hilbert.HilbertTwoKernel
-import HilbertUMD.Hilbert.HilbertPVBounds
-import HilbertUMD.Interfaces.HilbertInterval
-import Mathlib.Analysis.Normed.Lp.SmoothApprox
+module
+
+public import HilbertUMD.Hilbert.HilbertTwoKernel
+public import HilbertUMD.Hilbert.HilbertPVBounds
+public import HilbertUMD.Interfaces.HilbertInterval
+public import Mathlib.Analysis.Normed.Lp.SmoothApprox
+
+@[expose] public section
 
 /-! The existing L2 PV extension determines the Fourier L2 operator by
 linearity, its norm bound, and agreement on compact smooth functions. -/

@@ -1,5 +1,9 @@
-import HilbertUMD.Foundations.OperatorSpaces
-import HilbertUMD.UMD.DyadicMartingale
+module
+
+public import HilbertUMD.Foundations.OperatorSpaces
+public import HilbertUMD.UMD.DyadicMartingale
+
+@[expose] public section
 
 /-!
 # Completed bounds toward the p=2 main theorem

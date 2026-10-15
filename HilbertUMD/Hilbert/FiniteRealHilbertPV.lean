@@ -1,4 +1,8 @@
-import HilbertUMD.Hilbert.HilbertConstant
+module
+
+public import HilbertUMD.Hilbert.HilbertConstant
+
+@[expose] public section
 
 /-!
 # Finite-dimensional real principal-value reconstruction

@@ -1,8 +1,12 @@
-import HilbertUMD.Foundations.Spaces
-import Mathlib.Topology.Order.Compact
-import Mathlib.Analysis.Normed.Group.Bounded
-import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
+module
+
+public import HilbertUMD.Foundations.Spaces
+public import Mathlib.Topology.Order.Compact
+public import Mathlib.Analysis.Normed.Group.Bounded
+public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+
+@[expose] public section
 
 /-!
 # Graph norm transfer

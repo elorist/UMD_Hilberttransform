@@ -1,6 +1,10 @@
-import HilbertUMD.Hilbert.HilbertThreeHalvesFromFour
-import HilbertUMD.Hilbert.HilbertThreeHalvesKernel
-import HilbertUMD.Hilbert.HilbertSmoothKernel
+module
+
+public import HilbertUMD.Hilbert.HilbertThreeHalvesFromFour
+public import HilbertUMD.Hilbert.HilbertThreeHalvesKernel
+public import HilbertUMD.Hilbert.HilbertSmoothKernel
+
+@[expose] public section
 
 /-!
 # Almost-everywhere principal values on L(3/2)

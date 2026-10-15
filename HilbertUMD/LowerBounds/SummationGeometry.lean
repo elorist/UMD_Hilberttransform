@@ -1,5 +1,9 @@
-import HilbertUMD.Foundations.Matrices
-import HilbertUMD.Foundations.Geometry
+module
+
+public import HilbertUMD.Foundations.Matrices
+public import HilbertUMD.Foundations.Geometry
+
+@[expose] public section
 
 /-! The recursive summation matrix in the manuscript's ordered coordinates. -/
 
@@ -32,7 +36,7 @@ theorem summation_eq_initial_sum (n : ℕ) (x : Vec 𝕜 n) (i : Leaf n) :
         intro j
         have hi := (leafEquivFin n i).isLt
         omega
-      simp only [hr, if_false, Finset.sum_const_zero, add_zero]
+      simp only [hr, ite_false, Finset.sum_const_zero, add_zero]
     · change total (left x) + summation n (right x) i = _
       rw [Fintype.sum_sum_type, ih]
       change (∑ j : Leaf n, x (Sum.inl j)) +
@@ -46,7 +50,7 @@ theorem summation_eq_initial_sum (n : ℕ) (x : Vec 𝕜 n) (i : Leaf n) :
         intro j
         have hj := (leafEquivFin n j).isLt
         omega
-      simp only [hl, if_true, Nat.add_le_add_iff_left]
+      simp only [hl, ite_true, Nat.add_le_add_iff_left]
 
 theorem summation_basisVec_entry (n : ℕ) (i j : Leaf n) :
     summation n (basisVec j : Vec 𝕜 n) i =

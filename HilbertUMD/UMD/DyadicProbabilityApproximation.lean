@@ -1,4 +1,8 @@
-import HilbertUMD.UMD.WeightedBinaryEncoding
+module
+
+public import HilbertUMD.UMD.WeightedBinaryEncoding
+
+@[expose] public section
 
 /-! Approximation of all branching probabilities with a common binary block length. -/
 

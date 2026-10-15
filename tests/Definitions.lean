@@ -1,4 +1,8 @@
-import HilbertUMD
+module
+
+public import HilbertUMD
+
+@[expose] public section
 
 /-! Check the mathematical meanings of the normed types, dimensions, and
 operator constants independently of the public statement structures. -/

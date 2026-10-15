@@ -1,8 +1,12 @@
-import HilbertUMD.Main.Assembly
-import HilbertUMD.Main.UpperBounds
-import HilbertUMD.Matrices.SummationUpper
-import HilbertUMD.Main.QuantitativeConstants
-import HilbertUMD.Main.PaperStatement
+module
+
+public import HilbertUMD.Main.Assembly
+public import HilbertUMD.Main.UpperBounds
+public import HilbertUMD.Matrices.SummationUpper
+public import HilbertUMD.Main.QuantitativeConstants
+public import HilbertUMD.Main.PaperStatement
+
+@[expose] public section
 
 /-!
 # The p=2 main theorem over both scalar fields

@@ -1,6 +1,10 @@
-import HilbertUMD.Matrices.MatrixCubic
-import HilbertUMD.Analysis.MixedNorm
-import HilbertUMD.Analysis.CubicLp
+module
+
+public import HilbertUMD.Matrices.MatrixCubic
+public import HilbertUMD.Analysis.MixedNorm
+public import HilbertUMD.Analysis.CubicLp
+
+@[expose] public section
 
 /-! Mixed Hölder estimates for the original matrix energy increments. -/
 
@@ -19,15 +23,20 @@ theorem abs_integral_le_eLpNorm_product {E F : Type*}
     (ha : AEStronglyMeasurable a μ) (hb : AEStronglyMeasurable b μ)
     (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖a x‖ * ‖b x‖) :
     ENNReal.ofReal |∫ x, f x ∂μ| ≤ eLpNorm a p μ * eLpNorm b q μ := by
+  by_cases hf : Integrable f μ
+  swap
+  · simp [integral_undef hf]
   have hInt : ENNReal.ofReal |∫ x, f x ∂μ| ≤ eLpNorm f 1 μ := by
-    simpa only [Real.enorm_eq_ofReal_abs, eLpNorm_one_eq_lintegral_enorm] using
+    simpa only [Real.enorm_eq_ofReal_abs,
+      eLpNorm_one_eq_lintegral_enorm hf.aestronglyMeasurable] using
       enorm_integral_le_lintegral_enorm (μ := μ) f
   have hMono : eLpNorm f 1 μ ≤ eLpNorm (fun x => ‖a x‖ * ‖b x‖) 1 μ := by
-    apply eLpNorm_mono_ae
+    apply eLpNorm_mono_ae hf.aestronglyMeasurable
     filter_upwards [h] with x hx
     simpa only [norm_mul, norm_norm] using hx
-  have hHolder := eLpNorm_le_eLpNorm_mul_eLpNorm'_of_norm
-    (p := p) (q := q) (r := 1) ha hb (fun u v => ‖u‖ * ‖v‖) 1
+  have hHolder := eLpNorm_le_eLpNorm_mul_eLpNorm_of_norm
+    (p := p) (q := q) (r := 1) (fun u v => ‖u‖ * ‖v‖) 1
+    (by fun_prop) ha hb
     (Filter.Eventually.of_forall fun x => by simp only [norm_mul, norm_norm, NNReal.coe_one, one_mul, le_refl])
   exact hInt.trans (hMono.trans (by simpa only [ENNReal.coe_one, one_mul] using hHolder))
 
@@ -49,20 +58,23 @@ theorem block_pair_integral_bound (g : S → ℝ) (b w : S → ι → ℝ)
     ENNReal.ofReal |∫ s, ∑ i, b s i * w s i ∂μ| ≤
       eLpNorm g 3 μ * mixedNorm (3/2) 1 μ w := by
   apply abs_integral_le_eLpNorm_product μ _ g
-    (fun s => (WithLp.toLp 1 (w s) : PiLp 1 (fun _ : ι => ℝ))) hg.1 hw.1
+    (fun s => (WithLp.toLp 1 (w s) : PiLp 1 (fun _ : ι => ℝ)))
+    hg.aestronglyMeasurable hw.aestronglyMeasurable
   filter_upwards [hb] with s hs
   simpa only [Real.norm_eq_abs, PiLp.norm_eq_of_L1] using abs_sum_mul_le_mass (b s) (w s) (g s) hs
 
 /-- Norm of the sum of coordinate squares in L(3/2) is the square of the
 genuine L3(l2) norm. -/
-theorem eLpNorm_sum_squares (v : S → ι → ℝ) :
+theorem eLpNorm_sum_squares (v : S → ι → ℝ)
+    (hv : AEStronglyMeasurable (fun s =>
+      (WithLp.toLp 2 (v s) : PiLp 2 (fun _ : ι => ℝ))) μ) :
     eLpNorm (fun s => ∑ i, (v s i)^2) (3/2) μ = mixedNorm 3 2 μ v ^ 2 := by
   let V : S → PiLp 2 (fun _ : ι => ℝ) := fun s => WithLp.toLp 2 (v s)
   have hs : (fun s => ∑ i, (v s i)^2) = (fun s => ‖V s‖ ^ (2 : ℝ)) := by
     funext s
     rw [Real.rpow_two, PiLp.norm_eq_of_L2, Real.sq_sqrt (Finset.sum_nonneg fun i _ => sq_nonneg _)]
     simp only [V, Real.norm_eq_abs, sq_abs]
-  rw [hs, eLpNorm_norm_rpow _ (by norm_num)]
+  rw [hs, eLpNorm_norm_rpow _ hv (by norm_num)]
   norm_num [ENNReal.rpow_two]
   congr 2
   exact ENNReal.div_mul_cancel (by norm_num) (by simp)
@@ -82,9 +94,10 @@ theorem block_square_integral_bound (g : S → ℝ) (u v : S → ι → ℝ)
       rw [PiLp.norm_eq_of_L2, Real.sq_sqrt (Finset.sum_nonneg fun i _ => sq_nonneg _)]
       simp only [Real.norm_eq_abs, sq_abs]
     rw [hh]
-    exact hv.1.norm.pow 2
-  rw [← eLpNorm_sum_squares μ v]
-  apply abs_integral_le_eLpNorm_product μ _ g (fun s => ∑ i, (v s i)^2) hg.1 hsq
+    exact hv.aestronglyMeasurable.norm.pow 2
+  rw [← eLpNorm_sum_squares μ v hv.aestronglyMeasurable]
+  apply abs_integral_le_eLpNorm_product μ _ g (fun s => ∑ i, (v s i)^2)
+    hg.aestronglyMeasurable hsq
   filter_upwards [hu] with s hs
   have h := abs_sum_mul_le_mass (u s) (fun i => (v s i)^2) (g s) hs
   simpa only [Real.norm_eq_abs, abs_sq,
@@ -187,10 +200,12 @@ theorem norm_toLp_two_le_mass (u v : ι → ℝ) (hu : ∀ i, 0 ≤ u i) (hv : �
   exact Finset.sum_sq_le_sq_sum_of_nonneg (fun i _ => hu i)
 
 theorem mixedNorm_two_le_mass (u v : S → ι → ℝ) (g : S → ℝ)
+    (hum : AEStronglyMeasurable (fun s =>
+      (WithLp.toLp 2 (u s) : PiLp 2 (fun _ : ι => ℝ))) μ)
     (hu : ∀ᵐ s ∂μ, ∀ i, 0 ≤ u s i) (hv : ∀ᵐ s ∂μ, ∀ i, 0 ≤ v s i)
     (hsum : ∀ᵐ s ∂μ, ∑ i, (u s i + v s i) = g s) :
     mixedNorm 3 2 μ u ≤ eLpNorm g 3 μ := by
-  apply eLpNorm_mono_ae
+  apply eLpNorm_mono_ae hum
   filter_upwards [hu, hv, hsum] with s hu hv hs
   exact (norm_toLp_two_le_mass (u s) (v s) hu hv).trans
     (hs.le.trans (le_abs_self (g s)))

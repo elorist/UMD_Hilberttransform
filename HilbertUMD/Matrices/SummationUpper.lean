@@ -1,8 +1,12 @@
-import HilbertUMD.UMD.DyadicMatrixData
-import HilbertUMD.Matrices.MatrixCubic
-import HilbertUMD.Matrices.MatrixBound
-import HilbertUMD.Interfaces.MartingaleReduction
-import HilbertUMD.Matrices.MatrixComplexBridge
+module
+
+public import HilbertUMD.UMD.DyadicMatrixData
+public import HilbertUMD.Matrices.MatrixCubic
+public import HilbertUMD.Matrices.MatrixBound
+public import HilbertUMD.Interfaces.MartingaleReduction
+public import HilbertUMD.Matrices.MatrixComplexBridge
+
+@[expose] public section
 
 /-! Checked assembly of the summation operator upper bound from the original
 antisymmetric matrix estimate. All finite norm and scalar-field bridges here

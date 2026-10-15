@@ -1,6 +1,10 @@
-import HilbertUMD.UMD.LeafBits
-import HilbertUMD.UMD.FiniteFiltrationApproximation
-import Mathlib.Logic.Equiv.Fin.Basic
+module
+
+public import HilbertUMD.UMD.LeafBits
+public import HilbertUMD.UMD.FiniteFiltrationApproximation
+public import Mathlib.Logic.Equiv.Fin.Basic
+
+@[expose] public section
 
 /-! A finite filtration and a simple terminal function have an exact model on
 a finite binary tree. The probability law is allowed to be arbitrary. -/
@@ -49,7 +53,7 @@ theorem exists_leaf_filtration_model {Ω E : Type*} [mΩ : MeasurableSpace Ω] [
       (hjk : j.val ≤ k.val) : MeasurableSet[ℱ k] (event j i) := by
     have hj : j.val < m + 1 := lt_of_le_of_lt hjk k.isLt
     dsimp [event]
-    rw [dif_pos hj]
+    rw [dite_eq_left hj]
     split_ifs with h
     · exact ℱ.mono hjk _ h
     · exact @MeasurableSet.empty Ω (ℱ k)
@@ -88,7 +92,7 @@ theorem exists_leaf_filtration_model {Ω E : Type*} [mΩ : MeasurableSpace Ω] [
       ext x
       simp only [Set.mem_preimage, Set.mem_ofPred_eq, φ, leafBits_ofBits, bits, idx,
         Equiv.symm_apply_apply, decide_eq_true_eq]
-      simp only [event, Fin.val_castSucc, dif_pos k.isLt, hi, if_pos hsm]
+      simp only [event, Fin.val_castSucc, dite_eq_left k.isLt, hi, ite_eq_left hsm]
     · apply (@measurable_leafOfBits_prefix Ω (ℱ k) n (r k) bits ?_).comap_le
       intro idx hidx
       obtain ⟨⟨j, i⟩, rfl⟩ := finProdFinEquiv.surjective idx

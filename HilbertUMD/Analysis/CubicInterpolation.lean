@@ -1,6 +1,10 @@
-import HilbertUMD.Analysis.CubicEndpoint
-import HilbertUMD.Analysis.CubicComplex
-import HilbertUMD.Analysis.Interpolation
+module
+
+public import HilbertUMD.Analysis.CubicEndpoint
+public import HilbertUMD.Analysis.CubicComplex
+public import HilbertUMD.Analysis.Interpolation
+
+@[expose] public section
 
 /-! Compatibility and four-part complexification in the cubic argument.
 The dual endpoint is an explicit hypothesis. The required midpoint interpolation

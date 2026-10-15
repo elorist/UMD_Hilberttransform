@@ -1,5 +1,9 @@
-import HilbertUMD.Matrices.MatrixScalarData
-import HilbertUMD.Hilbert.HilbertThreeSharp
+module
+
+public import HilbertUMD.Matrices.MatrixScalarData
+public import HilbertUMD.Hilbert.HilbertThreeSharp
+
+@[expose] public section
 
 /-! Hilbert scalar data with M = 11/4 and P = 9, using the improved Cotlar energy estimate. -/
 

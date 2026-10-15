@@ -1,4 +1,8 @@
-import HilbertUMD.UMD.MartingaleThree
+module
+
+public import HilbertUMD.UMD.MartingaleThree
+
+@[expose] public section
 
 /-! Finite square-function estimates obtained from the cubic Hilbert inequality. -/
 
@@ -47,7 +51,8 @@ theorem dyadic_hilbert_square_three {ι : Type*} [Fintype ι]
   have heq : mixedNorm 3 2 (leafUniform n)
       (fun x j => dyadicSquareFunction n (fun y => f y j) x) =
       eLpNorm G 3 (leafUniform n) := by
-    rw [mixedNorm_two, ← eLpNorm_norm G]
+    rw [mixedNorm_two _ _ _ (leaf_memLp _ 1 _).aestronglyMeasurable,
+      ← eLpNorm_norm G (leaf_memLp _ 1 _).aestronglyMeasurable]
     congr 1
     funext x
     simp only [G, PiLp.norm_eq_of_L2, Real.norm_of_nonneg (dyadicSquareFunction_nonneg _ _ _),
@@ -60,8 +65,10 @@ theorem eLpNorm_dyadicSquareFunction_three (n : ℕ) (f : Leaf n → ℝ) :
     eLpNorm (dyadicSquareFunction n f) 3 (leafUniform n) ≤
       2 * eLpNorm f 3 (leafUniform n) := by
   have h := dyadic_hilbert_square_three (ι := Fin 1) n (fun x _ => f x)
-  simpa only [mixedNorm_two, Fin.sum_univ_one, Real.sqrt_sq_eq_abs, abs_norm,
-    eLpNorm_norm] using h
+  rw [mixedNorm_two 3 (leafUniform n) _ (leaf_memLp n 1 _).aestronglyMeasurable,
+    mixedNorm_two 3 (leafUniform n) _ (leaf_memLp n 1 _).aestronglyMeasurable] at h
+  simpa only [Fin.sum_univ_one, Real.sqrt_sq_eq_abs, abs_norm,
+    eLpNorm_norm _ (leaf_memLp n 1 _).aestronglyMeasurable] using h
 
 theorem dyadicDifference_self (n : ℕ) (k : Fin n) (f : Leaf n → ℝ) :
     dyadicDifference n k (dyadicDifference n k f) = dyadicDifference n k f := by
@@ -130,13 +137,13 @@ theorem eLpNorm_le_two_square_threeHalves (n : ℕ) (f : Leaf n → ℝ)
   have hsq (x : Leaf n) : ‖g x‖ ^ (2 : ℝ) = ‖f x‖ := by
     rw [Real.rpow_two, hg, Real.sq_sqrt (abs_nonneg _), Real.norm_eq_abs]
   have hnorm : lpNorm f (3 / 2) (leafUniform n) = lpNorm g 3 (leafUniform n) ^ 2 := by
-    have h := eLpNorm_norm_rpow (μ := leafUniform n) (p := 3 / 2) g (by norm_num : (0 : ℝ) < 2)
-    simp only [hsq, eLpNorm_norm] at h
+    have h := eLpNorm_norm_rpow (μ := leafUniform n) (p := 3 / 2) g
+      (leaf_memLp _ 1 _).aestronglyMeasurable (by norm_num : (0 : ℝ) < 2)
+    simp only [hsq, eLpNorm_norm _ (leaf_memLp _ 1 _).aestronglyMeasurable] at h
     norm_num only [ENNReal.ofReal_ofNat, ENNReal.div_mul_cancel (by norm_num : (2 : ℝ≥0∞) ≠ 0)
       (by simp : (2 : ℝ≥0∞) ≠ ∞), ENNReal.rpow_two] at h
     have hr := congrArg ENNReal.toReal h
-    simpa only [ENNReal.toReal_pow, toReal_eLpNorm (leaf_memLp n (3 / 2) f).aestronglyMeasurable,
-      toReal_eLpNorm (leaf_memLp n 3 g).aestronglyMeasurable] using hr
+    simpa only [ENNReal.toReal_pow, toReal_eLpNorm] using hr
   have hpair : (∫ x, f x * g x ∂leafUniform n) = lpNorm g 3 (leafUniform n) ^ 3 := by
     rw [lpNorm_leafUniform_three_cubed, integral_leafUniform]
     congr 1
@@ -152,11 +159,9 @@ theorem eLpNorm_le_two_square_threeHalves (n : ℕ) (f : Leaf n → ℝ)
       nlinarith [congrArg (fun a => a * Real.sqrt (-f x)) hs]
   have hsquare : lpNorm (dyadicSquareFunction n g) 3 (leafUniform n) ≤
       2 * lpNorm g 3 (leafUniform n) := by
-    have h := ENNReal.toReal_mono (ENNReal.mul_ne_top (by simp) (leaf_memLp n 3 g).2.ne)
+    have h := ENNReal.toReal_mono (ENNReal.mul_ne_top (by simp) (leaf_memLp n 3 g).ne)
       (eLpNorm_dyadicSquareFunction_three n g)
-    simpa only [ENNReal.toReal_mul, ENNReal.toReal_ofNat,
-      toReal_eLpNorm (leaf_memLp n 3 g).aestronglyMeasurable,
-      toReal_eLpNorm (leaf_memLp n 3 (dyadicSquareFunction n g)).aestronglyMeasurable] using h
+    simpa only [ENNReal.toReal_mul, ENNReal.toReal_ofNat, toReal_eLpNorm] using h
   have hp := (integral_mul_le_square n f g hf).trans
     (leaf_holder_threeHalves_three n _ _ (dyadicSquareFunction_nonneg n f)
       (dyadicSquareFunction_nonneg n g))

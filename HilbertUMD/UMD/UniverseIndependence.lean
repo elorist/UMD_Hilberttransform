@@ -1,4 +1,8 @@
-import HilbertUMD.Interfaces.MartingaleReduction
+module
+
+public import HilbertUMD.Interfaces.MartingaleReduction
+
+@[expose] public section
 
 /-! At exponent two, the UMD bound and operator constant are independent of
 the sample-space universe. Every universe gives the same finite dyadic

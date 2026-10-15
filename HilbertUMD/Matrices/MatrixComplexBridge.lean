@@ -1,6 +1,10 @@
-import HilbertUMD.Matrices.MatrixCompatible
-import HilbertUMD.Analysis.CubicComplex
-import HilbertUMD.UMD.DyadicLpOperators
+module
+
+public import HilbertUMD.Matrices.MatrixCompatible
+public import HilbertUMD.Analysis.CubicComplex
+public import HilbertUMD.UMD.DyadicLpOperators
+
+@[expose] public section
 
 /-! Identifying the actual matrix complexification on finite dyadic inputs. -/
 

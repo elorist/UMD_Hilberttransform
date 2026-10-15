@@ -1,9 +1,13 @@
-import HilbertUMD.Analysis.ScalarAmplification
-import HilbertUMD.UMD.SharpUMDTransfer
-import HilbertUMD.Hilbert.HilbertConstant
-import HilbertUMD.Interfaces.HilbertPV
-import Mathlib.Analysis.Normed.Lp.SmoothApprox
-import Mathlib.MeasureTheory.SpecificCodomains.Pi
+module
+
+public import HilbertUMD.Analysis.ScalarAmplification
+public import HilbertUMD.UMD.SharpUMDTransfer
+public import HilbertUMD.Hilbert.HilbertConstant
+public import HilbertUMD.Interfaces.HilbertPV
+public import Mathlib.Analysis.Normed.Lp.SmoothApprox
+public import Mathlib.MeasureTheory.SpecificCodomains.Pi
+
+@[expose] public section
 
 /-!
 # Sharp principal-value Hilbert transfer

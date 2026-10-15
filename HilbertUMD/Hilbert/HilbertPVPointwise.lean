@@ -1,6 +1,10 @@
-import HilbertUMD.Hilbert.HilbertInterval
-import Mathlib.Analysis.Calculus.DSlope
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
+module
+
+public import HilbertUMD.Hilbert.HilbertInterval
+public import Mathlib.Analysis.Calculus.DSlope
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+
+@[expose] public section
 
 /-!
 # Pointwise existence of smooth Hilbert principal values

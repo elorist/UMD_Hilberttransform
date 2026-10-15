@@ -1,5 +1,9 @@
-import HilbertUMD.UMD.UMD
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL2
+module
+
+public import HilbertUMD.UMD.UMD
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL2
+
+@[expose] public section
 
 /-!
 # Hilbert-valued L2 martingale orthogonality

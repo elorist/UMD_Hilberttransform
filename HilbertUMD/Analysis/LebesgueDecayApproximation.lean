@@ -1,6 +1,10 @@
-import Mathlib.Analysis.Calculus.BumpFunction.Convolution
-import Mathlib.Analysis.Normed.Group.Tannery
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
+module
+
+public import Mathlib.Analysis.Calculus.BumpFunction.Convolution
+public import Mathlib.Analysis.Normed.Group.Tannery
+public import Mathlib.MeasureTheory.Function.L1Space.Integrable
+
+@[expose] public section
 
 /-!
 # Approximation at Lebesgue points for kernels with quadratic decay
@@ -90,7 +94,7 @@ private theorem exists_coeff_bound {C ε d : ℝ} (hC : 0 ≤ C) (hε : 0 < ε)
     obtain ⟨n, hn, hn'⟩ := exists_nat_pow_near (show (1 : ℝ) ≤ d / ε by
       exact (le_div_iff₀ hε).mpr (by linarith)) (show (1 : ℝ) < 2 by norm_num)
     refine ⟨n + 1, ((div_lt_iff₀ hε).mp hn').le, ?_⟩
-    rw [if_neg h]
+    rw [ite_eq_right h]
     have hn0 : (0 : ℝ) < (2 : ℝ) ^ n := by positivity
     have hnle : (2 : ℝ) ^ n * ε ≤ d := (le_div_iff₀ hε).mp hn
     calc

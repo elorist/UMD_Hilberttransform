@@ -1,5 +1,9 @@
-import HilbertUMD.Analysis.InterpolationMidpoint
-import HilbertUMD.Analysis.ComplexL2Norming
+module
+
+public import HilbertUMD.Analysis.InterpolationMidpoint
+public import HilbertUMD.Analysis.ComplexL2Norming
+
+@[expose] public section
 
 /-!
 # The Riesz--Thorin estimate required by the cubic lemma

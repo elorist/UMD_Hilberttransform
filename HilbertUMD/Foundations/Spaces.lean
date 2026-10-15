@@ -1,5 +1,9 @@
-import HilbertUMD.Foundations.Matrices
-import HilbertUMD.Foundations.Geometry
+module
+
+public import HilbertUMD.Foundations.Matrices
+public import HilbertUMD.Foundations.Geometry
+
+@[expose] public section
 
 noncomputable section
 namespace HilbertUMD
@@ -29,7 +33,7 @@ def ESpace := Vec 𝕜 n
 instance : AddCommGroup (ESpace 𝕜 n) := inferInstanceAs (AddCommGroup (Vec 𝕜 n))
 instance : Module 𝕜 (ESpace 𝕜 n) := inferInstanceAs (Module 𝕜 (Vec 𝕜 n))
 
-private def eGroupNorm : AddGroupNorm (ESpace 𝕜 n) where
+def eGroupNorm : AddGroupNorm (ESpace 𝕜 n) where
   toAddGroupSeminorm := (sumNorm (𝕜 := 𝕜) n).toAddGroupSeminorm
   eq_zero_of_map_eq_zero' x := (sumNorm_eq_zero_iff n x).mp
 
@@ -67,7 +71,7 @@ instance (T : Vec 𝕜 n →ₗ[𝕜] Vec 𝕜 n) : AddCommGroup (GraphSpace T) 
 instance (T : Vec 𝕜 n →ₗ[𝕜] Vec 𝕜 n) : Module 𝕜 (GraphSpace T) :=
   inferInstanceAs (Module 𝕜 (Vec 𝕜 n))
 
-private def graphGroupNorm (T : Vec 𝕜 n →ₗ[𝕜] Vec 𝕜 n) : AddGroupNorm (GraphSpace T) where
+def graphGroupNorm (T : Vec 𝕜 n →ₗ[𝕜] Vec 𝕜 n) : AddGroupNorm (GraphSpace T) where
   toAddGroupSeminorm := (graphNorm T).toAddGroupSeminorm
   eq_zero_of_map_eq_zero' x := (graphNorm_eq_zero_iff T x).mp
 

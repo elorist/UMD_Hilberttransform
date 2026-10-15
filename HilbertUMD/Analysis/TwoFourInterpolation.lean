@@ -1,8 +1,12 @@
-import Mathlib.Analysis.SpecialFunctions.Pow.Integral
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-import Mathlib.MeasureTheory.Function.LpSpace.Complete
-import Mathlib.MeasureTheory.Function.Holder
-import Mathlib.Tactic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Integral
+public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import Mathlib.MeasureTheory.Function.LpSpace.Complete
+public import Mathlib.MeasureTheory.Function.Holder
+public import Mathlib.Tactic
+
+@[expose] public section
 
 /-!
 # Elementary interpolation between L2 and L4
@@ -41,13 +45,13 @@ theorem abs_sub_clip {a : ℝ} (ha : 0 ≤ a) (x : ℝ) :
 
 theorem clip_mem_two {f : ℝ → ℝ} (hf : MemLp f 2 volume) {a : ℝ} (ha : 0 ≤ a) :
     MemLp (fun x => clip a (f x)) 2 volume := by
-  apply hf.of_le ((continuous_const.max (continuous_const.min continuous_id)).comp_aestronglyMeasurable hf.1)
+  apply hf.of_le ((continuous_const.max (continuous_const.min continuous_id)).comp_aestronglyMeasurable hf.aestronglyMeasurable)
   filter_upwards with x
   exact (abs_clip ha (f x)).le.trans (min_le_right _ _)
 
 theorem clip_mem_four {f : ℝ → ℝ} (hf : MemLp f 2 volume) {a : ℝ} (ha : 0 ≤ a) :
     MemLp (fun x => clip a (f x)) 4 volume := by
-  have hm := (clip_mem_two hf ha).1
+  have hm := (clip_mem_two hf ha).aestronglyMeasurable
   apply (integrable_norm_rpow_iff hm (by norm_num : (4 : ℝ≥0∞) ≠ 0) (by norm_num)).mp
   norm_num only [ENNReal.toReal_ofNat, Real.rpow_ofNat]
   apply ((hf.integrable_norm_pow (by norm_num : (2 : ℕ) ≠ 0)).const_mul (a ^ 2)).mono'
@@ -153,9 +157,10 @@ theorem moment_congr {f g : ℝ → ℝ} (h : f =ᵐ[volume] g) (p : ℕ) :
   filter_upwards [h] with x hx
   rw [hx]
 
-theorem eLpNorm_pow_eq_moment (f : ℝ → ℝ) {p : ℕ} (hp : p ≠ 0) :
+theorem eLpNorm_pow_eq_moment (f : ℝ → ℝ) {p : ℕ} (hp : p ≠ 0)
+    (hf : AEStronglyMeasurable f volume) :
     eLpNorm f p volume ^ p = moment f p := by
-  rw [eLpNorm_eq_lintegral_rpow_enorm_toReal (by exact_mod_cast hp) (by finiteness)]
+  rw [eLpNorm_eq_lintegral_rpow_enorm_toReal (by exact_mod_cast hp) (by finiteness) hf]
   simp only [ENNReal.toReal_natCast]
   rw [← ENNReal.rpow_natCast, ← ENNReal.rpow_mul,
     one_div_mul_cancel (by exact_mod_cast hp : (p : ℝ) ≠ 0), ENNReal.rpow_one]
@@ -166,11 +171,11 @@ theorem eLpNorm_pow_eq_moment (f : ℝ → ℝ) {p : ℕ} (hp : p ≠ 0) :
 theorem measure_norm_ge_le {f : ℝ → ℝ} (hf : AEStronglyMeasurable f volume)
     {p : ℕ} (hp : p ≠ 0) {t : ℝ} (ht : 0 < t) :
     volume {x | t ≤ ‖f x‖} ≤ ENNReal.ofReal (t⁻¹ ^ p) * moment f p := by
-  have h := meas_ge_le_mul_pow_eLpNorm_enorm volume
+  have h := meas_ge_le_mul_pow_eLpNorm_enorm (f := f) volume
     (show (p : ℝ≥0∞) ≠ 0 by exact_mod_cast hp)
-    (show (p : ℝ≥0∞) ≠ ∞ by finiteness) hf
+    (show (p : ℝ≥0∞) ≠ ∞ by finiteness)
     (show ENNReal.ofReal t ≠ 0 by positivity) (by simp)
-  simp only [ENNReal.toReal_natCast, ENNReal.rpow_natCast, eLpNorm_pow_eq_moment f hp,
+  simp only [ENNReal.toReal_natCast, ENNReal.rpow_natCast, eLpNorm_pow_eq_moment f hp hf,
     ← ofReal_norm, ENNReal.ofReal_le_ofReal_iff (norm_nonneg _)] at h
   rwa [← ENNReal.ofReal_inv_of_pos ht, ← ENNReal.ofReal_pow (by positivity)] at h
 
@@ -266,9 +271,9 @@ private theorem weighted_tail_le (f : ℝ → ℝ) (hf : MemLp f 2 volume)
     (hU2 _).trans_eq (moment_congr hb2.coeFn_toLp 2)
   have hs := hU4 small hs2 hs4
   have htail := (measure_norm_add_ge hu t).trans (add_le_add
-    ((measure_norm_ge_le (Lp.memLp _).1 (by norm_num : (2 : ℕ) ≠ 0) (half_pos ht)).trans
+    ((measure_norm_ge_le (Lp.memLp _).aestronglyMeasurable (by norm_num : (2 : ℕ) ≠ 0) (half_pos ht)).trans
       (mul_le_mul_right hb _))
-    ((measure_norm_ge_le (Lp.memLp _).1 (by norm_num : (4 : ℕ) ≠ 0) (half_pos ht)).trans
+    ((measure_norm_ge_le (Lp.memLp _).aestronglyMeasurable (by norm_num : (4 : ℕ) ≠ 0) (half_pos ht)).trans
       (mul_le_mul_right hs _)))
   have hc2 : ENNReal.ofReal ((t / 2)⁻¹ ^ 2) * ENNReal.ofReal (t ^ 2) = 4 := by
     rw [← ENNReal.ofReal_mul (by positivity)]
@@ -299,7 +304,7 @@ theorem moment_cube_le_measurable (f : ℝ → ℝ) (hf : MemLp f 2 volume) (hm 
     apply Measurable.lintegral_prod_right
     unfold clip
     fun_prop
-  rw [moment_cube_layercake (Lp.memLp _).1]
+  rw [moment_cube_layercake (Lp.memLp _).aestronglyMeasurable]
   calc
     _ ≤ 3 * ∫⁻ t in Ioi (0 : ℝ),
         4 * moment (fun x => f x - clip (t / 20) (f x)) 2 +
@@ -327,27 +332,26 @@ theorem moment_cube_le_measurable (f : ℝ → ℝ) (hf : MemLp f 2 volume) (hm 
 /-- The cubic estimate is insensitive to the chosen measurable representative. -/
 theorem moment_cube_le (f : ℝ → ℝ) (hf : MemLp f 2 volume) :
     moment (U (hf.toLp f)) 3 ≤ 205 * moment f 3 := by
-  let g := hf.1.mk f
-  have he : f =ᵐ[volume] g := hf.1.ae_eq_mk
+  let g := hf.aestronglyMeasurable.mk f
+  have he : f =ᵐ[volume] g := hf.aestronglyMeasurable.ae_eq_mk
   have hg : MemLp g 2 volume := hf.ae_eq he
   have hc : hf.toLp f = hg.toLp g := MemLp.toLp_congr hf hg he
   rw [hc, moment_congr he 3]
-  exact moment_cube_le_measurable U hU2 hU4 g hg hf.1.stronglyMeasurable_mk.measurable
+  exact moment_cube_le_measurable U hU2 hU4 g hg hf.aestronglyMeasurable.stronglyMeasurable_mk.measurable
 
 /-- Endpoint bounds 1 and 5/2 imply the L3 bound 6, with no prior L3 membership assumption. -/
 theorem eLpNorm_three_le (f : ℝ → ℝ) (hf : MemLp f 2 volume) :
     eLpNorm (U (hf.toLp f)) 3 volume ≤ 6 * eLpNorm f 3 volume := by
-  have he (g : ℝ → ℝ) : eLpNorm g 3 volume ^ 3 = moment g 3 := by
-    simpa only [Nat.cast_ofNat] using eLpNorm_pow_eq_moment g (by norm_num : (3 : ℕ) ≠ 0)
+  have he (g : ℝ → ℝ) (hg : AEStronglyMeasurable g volume) : eLpNorm g 3 volume ^ 3 = moment g 3 := by
+    simpa only [Nat.cast_ofNat] using eLpNorm_pow_eq_moment g (by norm_num : (3 : ℕ) ≠ 0) hg
   apply (ENNReal.pow_le_pow_left_iff (by norm_num : (3 : ℕ) ≠ 0)).mp
-  rw [mul_pow, he, he]
+  rw [mul_pow, he _ (Lp.memLp _).aestronglyMeasurable, he _ hf.aestronglyMeasurable]
   exact (moment_cube_le U hU2 hU4 f hf).trans
     (mul_le_mul_left (by norm_num : (205 : ℝ≥0∞) ≤ 6 ^ 3) _)
 
 theorem memLp_three (f : ℝ → ℝ) (hf : MemLp f 2 volume) (h3 : MemLp f 3 volume) :
     MemLp (fun x => U (hf.toLp f) x) 3 volume := by
-  refine ⟨(Lp.memLp _).1, ?_⟩
   exact (eLpNorm_three_le U hU2 hU4 f hf).trans_lt
-    (ENNReal.mul_lt_top (by norm_num) h3.2)
+    (ENNReal.mul_lt_top (by norm_num) h3)
 
 end HilbertUMD.TwoFourInterpolation

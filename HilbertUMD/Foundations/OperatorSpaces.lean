@@ -1,6 +1,10 @@
-import HilbertUMD.Transfer.Transfer
-import HilbertUMD.UMD.UMD
-import HilbertUMD.UMD.MartingaleL2
+module
+
+public import HilbertUMD.Transfer.Transfer
+public import HilbertUMD.UMD.UMD
+public import HilbertUMD.UMD.MartingaleL2
+
+@[expose] public section
 
 /-!
 # Operator factorization through the graph spaces

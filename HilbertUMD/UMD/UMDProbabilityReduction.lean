@@ -1,7 +1,11 @@
-import HilbertUMD.UMD.UMD
-import Mathlib.MeasureTheory.Function.LpSpace.Complete
-import Mathlib.MeasureTheory.Function.LpSeminorm.Indicator
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
+module
+
+public import HilbertUMD.UMD.UMD
+public import Mathlib.MeasureTheory.Function.LpSpace.Complete
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Indicator
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
+
+@[expose] public section
 
 /-!
 # Reduction of UMD tests to probability-space terminal values
@@ -82,13 +86,14 @@ theorem umdBound_of_finiteMeasureUMDBound {p : ℝ≥0∞} {T : E →L[𝕜] F} 
   have hbound (n : ℕ) :
       eLpNorm ((s n).indicator (martingaleTransform T ε f)) p μ ≤
         (C : ℝ≥0∞) * eLpNorm (differenceSum f) p μ := by
-    rw [eLpNorm_indicator_eq_eLpNorm_restrict (hs n)]
+    rw [eLpNorm_indicator_eq_eLpNorm_restrict (hs n).nullMeasurableSet]
     have hfin : IsFiniteMeasure (μ.restrict (s n)) := ⟨by simpa using hsfin n⟩
     exact (h Ω mΩ (μ.restrict (s n)) hfin m hm ℱ f
       (hf.restrict_initial (hs₀ n)) ε hε).trans
         (mul_le_mul' le_rfl (eLpNorm_restrict_le _ _ _ _))
   apply Lp.eLpNorm_le_of_ae_tendsto (u := atTop (α := ℕ)) (Eventually.of_forall hbound)
     (fun n => (martingaleTransform_memLp T ε hf.memLp).aestronglyMeasurable.indicator (hs n))
+    (martingaleTransform_memLp T ε hf.memLp).aestronglyMeasurable
   exact Eventually.of_forall fun x => tendsto_const_nhds.congr'
     ((@eventually_mem_spanningSets Ω (ℱ 0) μ₀ _ x).mono fun n hn =>
       (Set.indicator_of_mem hn _).symm)
@@ -153,7 +158,10 @@ theorem finiteMeasureUMDBound_of_probabilityTerminalBound
   have hμν : μ = μ Set.univ • ν := by
     simp only [ν, smul_smul, ENNReal.mul_inv_cancel hmass (measure_ne_top μ _), one_smul]
   rw [hμν]
-  simp only [eLpNorm_smul_measure_of_ne_top (μ := ν) hp_top]
+  rw [eLpNorm_smul_measure_of_ne_top (μ := ν) hp_top _ _
+      (martingaleTransform_memLp T ε hfν.memLp).aestronglyMeasurable,
+    eLpNorm_smul_measure_of_ne_top (μ := ν) hp_top _ _
+      (differenceSum_memLp hfν.memLp).aestronglyMeasurable]
   simpa only [smul_eq_mul, mul_left_comm (C : ℝ≥0∞)] using
     mul_le_mul' (le_refl ((μ Set.univ) ^ (1 / p).toReal)) hb
 

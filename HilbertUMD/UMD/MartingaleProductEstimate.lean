@@ -1,5 +1,9 @@
-import HilbertUMD.Interfaces.MartingaleEstimates
-import HilbertUMD.UMD.LowerSquareL1
+module
+
+public import HilbertUMD.Interfaces.MartingaleEstimates
+public import HilbertUMD.UMD.LowerSquareL1
+
+@[expose] public section
 
 /-! Checked mixed-norm assembly of the martingale product estimate.
 The finite transform, square-function, maximal, and lower-square estimates
@@ -86,7 +90,7 @@ theorem dyadicSquareProduct_estimate_of_bounds (n : ℕ) (ε : Fin n → ℝ)
   have hdom : mixedNorm (3 / 2) 1 (leafUniform n)
       (dyadicFamilySquare n (dyadicFamilyTransform n ε (dyadicFamilyProduct n ε u v))) ≤
       mixedNorm (3 / 2) 1 (leafUniform n) (P + Q) := by
-    apply mixedNorm_mono
+    apply mixedNorm_mono _ _ _ _ _ (leaf_mixed_aestronglyMeasurable n 1 _)
     apply Filter.Eventually.of_forall
     intro x
     simp only [PiLp.norm_eq_of_L1, Real.norm_eq_abs]

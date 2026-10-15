@@ -1,5 +1,9 @@
-import HilbertUMD.Matrices.MatrixCompatible
-import HilbertUMD.Matrices.MatrixEnergy
+module
+
+public import HilbertUMD.Matrices.MatrixCompatible
+public import HilbertUMD.Matrices.MatrixEnergy
+
+@[expose] public section
 
 /-! Connecting the checked scalar-family matrix energy to genuine vector L³. -/
 
@@ -14,7 +18,9 @@ theorem CubicLp.ofReal_l1Norm_eq {ι : Type*} [Fintype ι]
     (p : ℝ≥0∞) [Fact (1 ≤ p)] (f : CubicLp.Space (ι := ι) μ p) :
     ENNReal.ofReal (CubicLp.l1Norm μ p f) = eLpNorm (fun x => ∑ i, |f x i|) p μ := by
   rw [CubicLp.l1Norm_apply, ofReal_norm, Lp.enorm_def]
-  apply eLpNorm_congr_norm_ae
+  apply eLpNorm_congr_norm_ae (Lp.aestronglyMeasurable _)
+    ((show Continuous (fun v : ι → ℝ => ∑ i, |v i|) by fun_prop).comp_aestronglyMeasurable
+      (Lp.aestronglyMeasurable f))
   filter_upwards [(CubicLp.toL1 (ι := ι)).coeFn_compLpL f] with x hx
   rw [hx, CubicLp.norm_toL1]
   exact (abs_of_nonneg (Finset.sum_nonneg (fun i _ => abs_nonneg (f x i)))).symm

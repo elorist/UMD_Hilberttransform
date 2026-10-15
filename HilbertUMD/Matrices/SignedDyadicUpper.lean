@@ -1,8 +1,12 @@
-import HilbertUMD.Hilbert.SharpHilbertTransfer
-import HilbertUMD.Hilbert.HilbertMatrixData
-import HilbertUMD.Matrices.MatrixCompatible
-import HilbertUMD.Analysis.CubicComplex
-import HilbertUMD.Matrices.MatrixBound
+module
+
+public import HilbertUMD.Hilbert.SharpHilbertTransfer
+public import HilbertUMD.Hilbert.HilbertMatrixData
+public import HilbertUMD.Matrices.MatrixCompatible
+public import HilbertUMD.Analysis.CubicComplex
+public import HilbertUMD.Matrices.MatrixBound
+
+@[expose] public section
 
 /-! Principal-value upper bounds for the manuscript's signed dyadic matrices.
 The mixed operator estimates are converted to the original test-function

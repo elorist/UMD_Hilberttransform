@@ -1,5 +1,9 @@
-import HilbertUMD.Hilbert.HilbertConstant
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+module
+
+public import HilbertUMD.Hilbert.HilbertConstant
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+
+@[expose] public section
 
 /-!
 # Principal value of an interval indicator

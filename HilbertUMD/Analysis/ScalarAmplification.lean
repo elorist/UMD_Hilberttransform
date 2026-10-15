@@ -1,4 +1,8 @@
-import HilbertUMD.Transfer.TransferL2
+module
+
+public import HilbertUMD.Transfer.TransferL2
+
+@[expose] public section
 
 /-! Coordinatewise amplification of scalar operators on actual Bochner L2. -/
 
@@ -27,7 +31,7 @@ theorem coordinate_insertion_l2 (j k : Leaf n) (g : Lp 𝕜 2 μ) :
   by_cases h : k = j
   · subst k
     simp [insertion, coordinate]
-  · rw [if_neg h]
+  · rw [ite_eq_right h]
     have hz : (coordinate (𝕜 := 𝕜) k) ((insertion j) (g t)) = 0 := by
       simp [insertion, coordinate, h]
     rw [hz]

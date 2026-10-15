@@ -1,5 +1,9 @@
-import HilbertUMD.Foundations.Matrices
-import HilbertUMD.Analysis.Cubic
+module
+
+public import HilbertUMD.Foundations.Matrices
+public import HilbertUMD.Analysis.Cubic
+
+@[expose] public section
 
 /-!
 # The tree matrices in the cubic upper-bound argument

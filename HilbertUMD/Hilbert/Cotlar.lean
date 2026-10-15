@@ -1,5 +1,9 @@
-import HilbertUMD.Interfaces.CotlarAnalysis
-import Mathlib.MeasureTheory.SpecificCodomains.WithLp
+module
+
+public import HilbertUMD.Interfaces.CotlarAnalysis
+public import Mathlib.MeasureTheory.SpecificCodomains.WithLp
+
+@[expose] public section
 
 /-!
 The real-line Hilbert part of the manuscript's scalar-product lemma.
@@ -35,13 +39,9 @@ theorem cotlar_difference_mixedNorm_le (u v Hu Hv : S → ι → ℝ)
     mixedNorm (3 / 2) 1 μ (fun t i => Hu t i * Hv t i - u t i * v t i) ≤
       mixedNorm 3 2 μ Hu * mixedNorm 3 2 μ Hv +
         mixedNorm 3 2 μ u * mixedNorm 3 2 μ v := by
-  have hmulH : MemLp (fun t => (WithLp.toLp 1 (fun i => Hu t i * Hv t i) :
-      PiLp 1 (fun _ : ι => ℝ))) (3 / 2) μ :=
-    MemLp.of_eval_piLp (fun i => (hHv i).mul (hHu i))
-  have hmul : MemLp (fun t => (WithLp.toLp 1 (fun i => u t i * v t i) :
-      PiLp 1 (fun _ : ι => ℝ))) (3 / 2) μ :=
-    MemLp.of_eval_piLp (fun i => (hv i).mul (hu i))
-  have hh := eLpNorm_sub_le hmulH.aestronglyMeasurable hmul.aestronglyMeasurable
+  have hh := eLpNorm_sub_le (μ := μ)
+    (f := fun t => (WithLp.toLp 1 (fun i => Hu t i * Hv t i) : PiLp 1 (fun _ : ι => ℝ)))
+    (g := fun t => (WithLp.toLp 1 (fun i => u t i * v t i) : PiLp 1 (fun _ : ι => ℝ)))
     (show (1 : ℝ≥0∞) ≤ 3 / 2 by rw [ENNReal.le_div_iff_mul_le (by norm_num) (by norm_num)]; norm_num)
   change mixedNorm (3 / 2) 1 μ (fun t i => Hu t i * Hv t i - u t i * v t i) ≤
     mixedNorm (3 / 2) 1 μ (fun t i => Hu t i * Hv t i) +

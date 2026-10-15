@@ -1,9 +1,13 @@
-import HilbertUMD.Main.UMDBounds
-import HilbertUMD.LowerBounds.SummationLower
-import HilbertUMD.LowerBounds.SignedDyadicLower
-import HilbertUMD.LowerBounds.BinaryLogit
-import HilbertUMD.LowerBounds.HilbertLower
-import HilbertUMD.Hilbert.HilbertGraphBounds
+module
+
+public import HilbertUMD.Main.UMDBounds
+public import HilbertUMD.LowerBounds.SummationLower
+public import HilbertUMD.LowerBounds.SignedDyadicLower
+public import HilbertUMD.LowerBounds.BinaryLogit
+public import HilbertUMD.LowerBounds.HilbertLower
+public import HilbertUMD.Hilbert.HilbertGraphBounds
+
+@[expose] public section
 
 /-!
 # Direct lower bounds for the main theorem

@@ -1,5 +1,9 @@
-import HilbertUMD.UMD.DyadicTransfer
-import HilbertUMD.Interfaces.MartingaleReduction
+module
+
+public import HilbertUMD.UMD.DyadicTransfer
+public import HilbertUMD.Interfaces.MartingaleReduction
+
+@[expose] public section
 
 /-!
 # Sharp UMD transfer for the actual operator constants

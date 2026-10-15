@@ -1,4 +1,8 @@
-import HilbertUMD.Matrices.MatrixScalarData
+module
+
+public import HilbertUMD.Matrices.MatrixScalarData
+
+@[expose] public section
 
 /-! The original cubic energy bound for both tree matrices, deduced from
 scalar analytic inputs and the checked block decomposition. -/
@@ -52,9 +56,13 @@ theorem ScalarMatrixData.level_energy_bound {η M P : ℝ}
     filter_upwards [hgeom] with s hs
     exact hs.2
   have hU : mixedNorm 3 2 μ (fun s i => u i s) ≤ ENNReal.ofReal G :=
-    (mixedNorm_two_le_mass μ _ _ g huPos hvPos hsum).trans hgNorm
+    (mixedNorm_two_le_mass μ _ _ g
+      (MemLp.of_eval_piLp (fun i => Lp.memLp (u i))).aestronglyMeasurable
+      huPos hvPos hsum).trans hgNorm
   have hV : mixedNorm 3 2 μ (fun s i => v i s) ≤ ENNReal.ofReal G := by
-    apply (mixedNorm_two_le_mass μ _ _ g hvPos huPos ?_).trans hgNorm
+    apply (mixedNorm_two_le_mass μ _ _ g
+      (MemLp.of_eval_piLp (fun i => Lp.memLp (v i))).aestronglyMeasurable
+      hvPos huPos ?_).trans hgNorm
     filter_upwards [hsum] with s hs
     simpa only [add_comm] using hs
   have hRU : mixedNorm 3 2 μ (fun s i => R.atThree (u i) s) ≤ ENNReal.ofReal (M * G) := by

@@ -1,6 +1,10 @@
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.MeasureTheory.Function.L2Space
-import Mathlib.Tactic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.MeasureTheory.Function.L2Space
+public import Mathlib.Tactic
+
+@[expose] public section
 
 /-! The scalar logarithmic diagonal witness for the signed dyadic matrix. -/
 

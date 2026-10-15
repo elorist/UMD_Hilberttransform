@@ -1,5 +1,9 @@
-import HilbertUMD.LowerBounds.BinaryShift
-import Mathlib.Analysis.InnerProductSpace.Orthonormal
+module
+
+public import HilbertUMD.LowerBounds.BinaryShift
+public import Mathlib.Analysis.InnerProductSpace.Orthonormal
+
+@[expose] public section
 
 /-! Orthonormal binary sign functions and their finite Bessel inequality. -/
 
@@ -64,12 +68,12 @@ theorem integral_comp_tau_mul_sign {h : ℝ → ℝ} (hh : Integrable h unitMeas
     rw [← integral_neg]
     apply integral_congr_ae
     filter_upwards [ae_restrict_mem measurableSet_Ioo] with t ht
-    simp only [tau, sign, if_pos ht.2, mul_neg_one]
+    simp only [tau, sign, ite_eq_left ht.2, mul_neg_one]
   have hright : (∫ t in Ioo (1/2 : ℝ) 1, h (tau t) * sign t) =
       ∫ t in Ioo (1/2 : ℝ) 1, h (2*t-1) := by
     apply integral_congr_ae
     filter_upwards [ae_restrict_mem measurableSet_Ioo] with t ht
-    simp only [tau, sign, if_neg (not_lt.mpr ht.1.le), mul_one]
+    simp only [tau, sign, ite_eq_right (not_lt.mpr ht.1.le), mul_one]
   have heleft := (measurableEmbedding_mulLeft₀ (by norm_num : (2 : ℝ) ≠ 0)).integral_map
     (μ := volume.restrict (Ioo (0 : ℝ) (1/2))) h
   have heright := ((measurableEmbedding_addRight (-1 : ℝ)).comp
@@ -100,12 +104,12 @@ theorem integral_r_mul_r (i j : ℕ) :
     cases j with
     | zero => simp only [r_mul_self]; simp
     | succ j =>
-      simpa only [r_succ, mul_comm, Nat.zero_ne_add_one, if_false] using
+      simpa only [r_succ, mul_comm, Nat.zero_ne_add_one, ite_false] using
         pair_r_zero (r_integrable j)
   | succ i ih =>
     cases j with
     | zero =>
-      simpa only [r_succ, Nat.add_one_ne_zero, if_false] using
+      simpa only [r_succ, Nat.add_one_ne_zero, ite_false] using
         pair_r_zero (r_integrable i)
     | succ j =>
       simp only [r_succ]

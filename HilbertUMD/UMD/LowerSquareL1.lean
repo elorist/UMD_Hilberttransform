@@ -1,5 +1,9 @@
-import HilbertUMD.UMD.MartingaleSquare
-import HilbertUMD.UMD.PathwiseDavis
+module
+
+public import HilbertUMD.UMD.MartingaleSquare
+public import HilbertUMD.UMD.PathwiseDavis
+
+@[expose] public section
 
 /-! A dimension-independent lower square-function estimate for finite real l1. -/
 
@@ -202,19 +206,20 @@ theorem mixedNorm_lower_square_l1 {ι : Type*} [Fintype ι]
       _ ≤ S x := sampleL2_sum_le (fun j k => |dyadicDifference n k (fun y => f y j) x|)
   have hGn : eLpNorm G (3 / 2) (leafUniform n) ≤ 2 * eLpNorm S (3 / 2) (leafUniform n) :=
     (eLpNorm_le_two_square_threeHalves n G hGzero).trans (mul_le_mul' le_rfl
-      (eLpNorm_mono_real (fun x => by
+      (eLpNorm_mono_real (leaf_memLp _ 1 _).aestronglyMeasurable (fun x => by
         rw [Real.norm_of_nonneg (dyadicSquareFunction_nonneg _ _ _)]; exact hSquare x)))
-  rw [mixedNorm_one, mixedNorm_one]
+  rw [mixedNorm_one _ _ _ (leaf_memLp _ 1 _).aestronglyMeasurable,
+    mixedNorm_one _ _ _ (leaf_memLp _ 1 _).aestronglyMeasurable]
   simp only [Real.norm_of_nonneg (dyadicSquareFunction_nonneg _ _ _)]
   change eLpNorm (fun x => ∑ j, ‖f x j‖) (3 / 2) (leafUniform n) ≤
     (45 / 8) * eLpNorm S (3 / 2) (leafUniform n)
   calc
-    _ ≤ eLpNorm (((29 / 8) : ℝ) • S + G) (3 / 2) (leafUniform n) := eLpNorm_mono_real (fun x => by
+    _ ≤ eLpNorm (((29 / 8) : ℝ) • S + G) (3 / 2) (leafUniform n) :=
+      eLpNorm_mono_real (leaf_memLp _ 1 _).aestronglyMeasurable (fun x => by
       rw [Real.norm_of_nonneg (Finset.sum_nonneg (fun j _ => norm_nonneg _))]
       simpa only [Real.norm_eq_abs, Pi.add_apply, Pi.smul_apply, smul_eq_mul] using hpoint x)
     _ ≤ eLpNorm (((29 / 8) : ℝ) • S) (3 / 2) (leafUniform n) + eLpNorm G (3 / 2) (leafUniform n) :=
-      eLpNorm_add_le (leaf_memLp n 1 _).aestronglyMeasurable
-        (leaf_memLp n 1 G).aestronglyMeasurable (by
+      eLpNorm_add_le (by
           rw [ENNReal.le_div_iff_mul_le (by norm_num) (by norm_num)]; norm_num)
     _ ≤ (29 / 8) * eLpNorm S (3 / 2) (leafUniform n) + 2 * eLpNorm S (3 / 2) (leafUniform n) := by
       rw [eLpNorm_const_smul]

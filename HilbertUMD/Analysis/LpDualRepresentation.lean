@@ -1,6 +1,10 @@
-import HilbertUMD.Analysis.ScalarLpDualRepresentation
-import HilbertUMD.Analysis.MixedLpNorming
-import Mathlib.MeasureTheory.Function.Holder
+module
+
+public import HilbertUMD.Analysis.ScalarLpDualRepresentation
+public import HilbertUMD.Analysis.MixedLpNorming
+public import Mathlib.MeasureTheory.Function.Holder
+
+@[expose] public section
 
 /-! Isometric L³(l¹) dual representation for finite real coordinate spaces.
 Scalar existence comes from cubic-energy minimization; the exact norm comes

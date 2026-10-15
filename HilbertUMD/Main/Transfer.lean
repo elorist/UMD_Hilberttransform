@@ -1,5 +1,9 @@
-import HilbertUMD.UMD.SharpUMDTransfer
-import HilbertUMD.Hilbert.SharpHilbertTransfer
+module
+
+public import HilbertUMD.UMD.SharpUMDTransfer
+public import HilbertUMD.Hilbert.SharpHilbertTransfer
+
+@[expose] public section
 
 /-! Checked numerical transfer of square-root matrix bounds to graph spaces. -/
 

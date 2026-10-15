@@ -1,0 +1,6 @@
+{
+  "challenge_module": "Challenge",
+  "solution_module": "Solution",
+  "theorem_names": ["HilbertUMD.Comparison.theorem_1_1"],
+  "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"]
+}

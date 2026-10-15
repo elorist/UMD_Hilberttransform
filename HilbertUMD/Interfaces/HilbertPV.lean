@@ -1,8 +1,12 @@
-import HilbertUMD.Hilbert.HilbertConstant
-import HilbertUMD.Hilbert.HilbertPVPointwise
-import HilbertUMD.Hilbert.HilbertPVFourier
-import HilbertUMD.Hilbert.FiniteComplexHilbertPV
-import HilbertUMD.Hilbert.FiniteRealHilbertPV
+module
+
+public import HilbertUMD.Hilbert.HilbertConstant
+public import HilbertUMD.Hilbert.HilbertPVPointwise
+public import HilbertUMD.Hilbert.HilbertPVFourier
+public import HilbertUMD.Hilbert.FiniteComplexHilbertPV
+public import HilbertUMD.Hilbert.FiniteRealHilbertPV
+
+@[expose] public section
 
 /-!
 # Principal-value/Fourier identifications

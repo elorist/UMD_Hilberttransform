@@ -1,5 +1,9 @@
-import HilbertUMD.UMD.Rademacher
-import HilbertUMD.Foundations.OperatorSpaces
+module
+
+public import HilbertUMD.UMD.Rademacher
+public import HilbertUMD.Foundations.OperatorSpaces
+
+@[expose] public section
 
 /-! A direct dyadic lower bound for the summation operator and X_n.
 The argument uses the actual conditional averages of the coordinate-vector

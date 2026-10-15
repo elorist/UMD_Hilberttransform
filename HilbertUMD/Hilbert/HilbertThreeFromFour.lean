@@ -1,6 +1,10 @@
-import HilbertUMD.Hilbert.HilbertFourCompatibility
-import HilbertUMD.Analysis.TwoFourInterpolation
-import HilbertUMD.Hilbert.HilbertThreeDual
+module
+
+public import HilbertUMD.Hilbert.HilbertFourCompatibility
+public import HilbertUMD.Analysis.TwoFourInterpolation
+public import HilbertUMD.Hilbert.HilbertThreeDual
+
+@[expose] public section
 
 /-!
 # An independent real L3 Hilbert operator
@@ -19,16 +23,20 @@ open TwoFourInterpolation HilbertFourCompatibility
 
 private theorem moment_two (g : Lp ℝ 2 (volume : Measure ℝ)) :
     moment (realHilbertL2 g) 2 ≤ moment g 2 := by
-  have he (f : ℝ → ℝ) : eLpNorm f 2 volume ^ 2 = moment f 2 := by
-    simpa only [Nat.cast_ofNat] using eLpNorm_pow_eq_moment f (by norm_num : (2 : ℕ) ≠ 0)
-  rw [← he, ← he, ← Lp.enorm_def, ← Lp.enorm_def, realHilbertL2.enorm_map]
+  have he (f : ℝ → ℝ) (hf : AEStronglyMeasurable f volume) :
+      eLpNorm f 2 volume ^ 2 = moment f 2 := by
+    simpa only [Nat.cast_ofNat] using eLpNorm_pow_eq_moment f (by norm_num : (2 : ℕ) ≠ 0) hf
+  rw [← he _ (Lp.aestronglyMeasurable (realHilbertL2 g)),
+    ← he _ (Lp.aestronglyMeasurable g), ← Lp.enorm_def, ← Lp.enorm_def,
+    realHilbertL2.enorm_map]
 
 private theorem moment_four (g : ℝ → ℝ) (h2 : MemLp g 2 volume) (h4 : MemLp g 4 volume) :
     moment (realHilbertL2 (h2.toLp g)) 4 ≤ ENNReal.ofReal (625 / 16 : ℝ) * moment g 4 := by
-  have he (f : ℝ → ℝ) : eLpNorm f 4 volume ^ 4 = moment f 4 := by
-    simpa only [Nat.cast_ofNat] using eLpNorm_pow_eq_moment f (by norm_num : (4 : ℕ) ≠ 0)
+  have he (f : ℝ → ℝ) (hf : AEStronglyMeasurable f volume) :
+      eLpNorm f 4 volume ^ 4 = moment f 4 := by
+    simpa only [Nat.cast_ofNat] using eLpNorm_pow_eq_moment f (by norm_num : (4 : ℕ) ≠ 0) hf
   have h := pow_le_pow_left' (realHilbertL2_eLpNorm_four_le g h2 h4) 4
-  rw [mul_pow, he, he] at h
+  rw [mul_pow, he _ (Lp.aestronglyMeasurable _), he _ h2.aestronglyMeasurable] at h
   have hc : (5 / 2 : ℝ≥0∞) ^ 4 = ENNReal.ofReal (625 / 16 : ℝ) := by
     apply (ENNReal.toReal_eq_toReal_iff' (by finiteness) ENNReal.ofReal_ne_top).mp
     norm_num

@@ -1,4 +1,8 @@
-import HilbertUMD.UMD.WeightedBinaryTree
+module
+
+public import HilbertUMD.UMD.WeightedBinaryTree
+
+@[expose] public section
 
 /-! Realization of dyadic branching probabilities by uniform binary blocks. -/
 
@@ -104,10 +108,10 @@ theorem leafAverage_decode {E : Type*} [AddCommGroup E] [Module ℝ E]
           f (Sum.inl (decode L n (left s) b)) else f (Sum.inr (decode L n (right s) b)))]
       cases hs : root s (leafSplit L (depth L n) i).1 with
       | false =>
-        simpa only [hs, Bool.false_eq_true, if_false, decode, average, bias_right] using
+        simpa only [hs, Bool.false_eq_true, ite_false, decode, average, bias_right] using
           ih k (by omega) (right s) (fun j => f (Sum.inr j)) (leafSplit L (depth L n) i).2
       | true =>
-        simpa only [hs, if_true, decode, average, bias_left] using
+        simpa only [hs, ite_true, decode, average, bias_left] using
           ih k (by omega) (left s) (fun j => f (Sum.inl j)) (leafSplit L (depth L n) i).2
 
 end HilbertUMD.WeightedTree

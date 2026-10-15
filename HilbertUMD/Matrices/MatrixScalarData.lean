@@ -1,6 +1,10 @@
-import HilbertUMD.Matrices.MatrixBlocksLp
-import HilbertUMD.Matrices.MatrixEnergyAnalysis
-import Mathlib.MeasureTheory.SpecificCodomains.WithLp
+module
+
+public import HilbertUMD.Matrices.MatrixBlocksLp
+public import HilbertUMD.Matrices.MatrixEnergyAnalysis
+public import Mathlib.MeasureTheory.SpecificCodomains.WithLp
+
+@[expose] public section
 
 /-! Scalar analytic inputs for the common matrix argument. These are explicit
 operator hypotheses, not assumed matrix estimates. The applications provide
@@ -14,15 +18,19 @@ namespace HilbertUMD
 variable {S : Type*} [MeasurableSpace S] (μ : Measure S)
 
 def scalarProductLp (R : Lp ℝ 3 μ →L[ℝ] Lp ℝ 3 μ) (η : ℝ)
-    (u v : Lp ℝ 3 μ) : Lp ℝ (3/2) μ :=
-  ((Lp.memLp (R v)).mul (Lp.memLp u) |>.add
-    (((Lp.memLp (R u)).mul (Lp.memLp v)).const_mul η)).toLp
-      (fun s => u s * R v s + η * (v s * R u s))
+    (u v : Lp ℝ 3 μ) : Lp ℝ (3/2) μ := by
+  have h : MemLp (fun s => u s * R v s + η * (v s * R u s)) (3/2) μ := by
+    apply (((Lp.memLp u).mul (Lp.memLp (R v))).add
+      (((Lp.memLp v).mul (Lp.memLp (R u))).const_mul η)).ae_eq
+    filter_upwards [] with s
+    simp only [Pi.mul_apply, Pi.add_apply]
+  exact h.toLp (fun s => u s * R v s + η * (v s * R u s))
 
 theorem scalarProductLp_coeFn (R : Lp ℝ 3 μ →L[ℝ] Lp ℝ 3 μ) (η : ℝ)
     (u v : Lp ℝ 3 μ) :
-    scalarProductLp μ R η u v =ᵐ[μ] (fun s => u s * R v s + η * (v s * R u s)) :=
-  MemLp.coeFn_toLp _
+    scalarProductLp μ R η u v =ᵐ[μ] (fun s => u s * R v s + η * (v s * R u s)) := by
+  unfold scalarProductLp
+  exact MemLp.coeFn_toLp _
 
 /-- The precise scalar product/duality assumptions needed for energy growth.
 The constants M and P precede and are independent of the finite family size. -/

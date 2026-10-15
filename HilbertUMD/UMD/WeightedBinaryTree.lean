@@ -1,4 +1,8 @@
-import HilbertUMD.UMD.LeafBlocks
+module
+
+public import HilbertUMD.UMD.LeafBlocks
+
+@[expose] public section
 
 /-! Finite binary trees with arbitrary branching probabilities. -/
 

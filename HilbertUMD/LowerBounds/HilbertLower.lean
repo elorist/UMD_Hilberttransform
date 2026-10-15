@@ -1,7 +1,11 @@
-import HilbertUMD.Interfaces.HilbertInterval
-import HilbertUMD.LowerBounds.SummationGeometry
-import HilbertUMD.LowerBounds.HilbertLowerGeometry
-import Mathlib.MeasureTheory.SpecificCodomains.WithLp
+module
+
+public import HilbertUMD.Interfaces.HilbertInterval
+public import HilbertUMD.LowerBounds.SummationGeometry
+public import HilbertUMD.LowerBounds.HilbertLowerGeometry
+public import Mathlib.MeasureTheory.SpecificCodomains.WithLp
+
+@[expose] public section
 
 /-! The manuscript's interval-step witness for the summation Hilbert lower bound. -/
 
@@ -23,7 +27,7 @@ def uniformStep (n : ℕ) (t : ℝ) : L1Vec 𝕜 n :=
 theorem uniformStep_memLp (n : ℕ) (p : ℝ≥0∞) : MemLp (uniformStep (𝕜 := 𝕜) n) p volume := by
   apply MemLp.of_eval_piLp
   intro j
-  exact memLp_indicator_const p measurableSet_Ico 1 (Or.inr (by simp))
+  exact memLp_indicator_const p measurableSet_Ico.nullMeasurableSet 1 (Or.inr (by simp))
 
 theorem uniformCell_subset_unit (n : ℕ) (j : Leaf n) :
     uniformCell n j ⊆ Set.Ico (0 : ℝ) 1 := by
@@ -71,11 +75,13 @@ theorem norm_uniformStep (n : ℕ) (t : ℝ) :
 theorem eLpNorm_uniformStep_two (n : ℕ) :
     eLpNorm (uniformStep (𝕜 := 𝕜) n) 2 volume = 1 := by
   rw [eLpNorm_congr_norm_ae (g := (Set.Ico (0 : ℝ) 1).indicator (fun _ => (1 : ℝ)))
+    (uniformStep_memLp n 2).aestronglyMeasurable
+    (aestronglyMeasurable_const.indicator measurableSet_Ico)
     (Eventually.of_forall fun t => by
       rw [norm_uniformStep]
       simp only [Set.indicator]
       split_ifs <;> norm_num)]
-  simp [eLpNorm_indicator_const, measurableSet_Ico]
+  simp [eLpNorm_indicator_const measurableSet_Ico.nullMeasurableSet]
 
 theorem summation_uniformStep (n : ℕ) (i : Leaf n) (t : ℝ) :
     summationOperator (𝕜 := 𝕜) n (uniformStep n t) i =
@@ -176,7 +182,7 @@ theorem summation_HilbertBound_log_lower (n : ℕ) (hn : 3 ≤ n) {C : ℝ≥0}
   have hm := summation_pv_middle_lower n hn hpv
   have hdom : eLpNorm ((Set.Icc (1 / 4 : ℝ) (3 / 4)).indicator (fun _ => K)) 2 volume
       ≤ eLpNorm g 2 volume := by
-    apply eLpNorm_mono_ae
+    apply eLpNorm_mono_ae (aestronglyMeasurable_const.indicator measurableSet_Icc)
     filter_upwards [hm] with t ht
     by_cases hs : t ∈ Set.Icc (1 / 4 : ℝ) (3 / 4)
     · rw [Set.indicator_of_mem hs, Real.norm_eq_abs, abs_of_nonneg hK]
@@ -199,7 +205,8 @@ theorem summation_HilbertBound_log_lower (n : ℕ) (hn : 3 ≤ n) {C : ℝ≥0}
         ring
       _ = ENNReal.ofReal K * (1 / 2 : ℝ≥0∞) ^ (1 / 2 : ℝ) := by rw [hhalf]
       _ = eLpNorm ((Set.Icc (1 / 4 : ℝ) (3 / 4)).indicator (fun _ => K)) 2 volume := by
-        rw [eLpNorm_indicator_const measurableSet_Icc (by norm_num) (by norm_num)]
+        rw [eLpNorm_indicator_const measurableSet_Icc.nullMeasurableSet
+          (by norm_num) (by norm_num)]
         norm_num [Real.enorm_eq_ofReal_abs, abs_of_nonneg hK]
         rw [ENNReal.ofReal_div_of_pos (x := 1) (y := 2) (by norm_num)]
         norm_num
@@ -245,7 +252,7 @@ theorem summation_HilbertBound_uniform_lower (n : ℕ) {C : ℝ≥0}
   have hm := summation_pv_far_lower n hpv
   have hdom : eLpNorm ((Set.Icc (2 : ℝ) 3).indicator (fun _ => K)) 2 volume
       ≤ eLpNorm g 2 volume := by
-    apply eLpNorm_mono_ae
+    apply eLpNorm_mono_ae (aestronglyMeasurable_const.indicator measurableSet_Icc)
     filter_upwards [hm] with t ht
     by_cases hs : t ∈ Set.Icc (2 : ℝ) 3
     · rw [Set.indicator_of_mem hs, Real.norm_eq_abs, abs_of_nonneg hK]
@@ -254,7 +261,8 @@ theorem summation_HilbertBound_uniform_lower (n : ℕ) {C : ℝ≥0}
       exact norm_nonneg _
   have hk : eLpNorm ((Set.Icc (2 : ℝ) 3).indicator (fun _ => K)) 2 volume =
       ENNReal.ofReal K := by
-    rw [eLpNorm_indicator_const measurableSet_Icc (by norm_num) (by norm_num)]
+    rw [eLpNorm_indicator_const measurableSet_Icc.nullMeasurableSet
+      (by norm_num) (by norm_num)]
     norm_num [Real.enorm_eq_ofReal_abs, abs_of_nonneg hK]
   rw [hk] at hdom
   exact ENNReal.ofReal_le_coe.mp (hdom.trans hgn)

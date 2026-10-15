@@ -1,4 +1,8 @@
-import HilbertUMD.UMD.MartingaleMaximal
+module
+
+public import HilbertUMD.UMD.MartingaleMaximal
+
+@[expose] public section
 
 /-!
 # Classical estimates used in the martingale product argument

@@ -1,4 +1,8 @@
-import HilbertUMD.UMD.LowerSquareL1
+module
+
+public import HilbertUMD.UMD.LowerSquareL1
+
+@[expose] public section
 
 /-!
 # A finite vector-valued Doob inequality
@@ -223,12 +227,13 @@ end Coordinates
 
 private theorem leaf_toReal_eLpNorm (n : ℕ) (p : ℝ≥0∞) (f : Leaf n → ℝ) :
     (eLpNorm f p (leafUniform n)).toReal = lpNorm f p (leafUniform n) :=
-  toReal_eLpNorm (leaf_memLp n p f).aestronglyMeasurable
+  toReal_eLpNorm
 
 theorem lpNorm_sq_threeHalves (n : ℕ) (f : Leaf n → ℝ) :
     lpNorm (fun x => f x ^ 2) (3 / 2) (leafUniform n) =
       lpNorm f 3 (leafUniform n) ^ 2 := by
   have h := eLpNorm_norm_rpow (μ := leafUniform n) (p := 3 / 2) f
+    (leaf_memLp n 1 f).aestronglyMeasurable
     (by norm_num : (0 : ℝ) < 2)
   norm_num only [Real.rpow_two, Real.norm_eq_abs, sq_abs, ENNReal.ofReal_ofNat,
     ENNReal.div_mul_cancel (by norm_num : (2 : ℝ≥0∞) ≠ 0) (by simp : (2 : ℝ≥0∞) ≠ ∞),
@@ -242,12 +247,13 @@ theorem leaf_lpNorm_mul_three (n : ℕ) (f g : Leaf n → ℝ) :
   let : ENNReal.HolderTriple 3 3 (3 / 2) := ⟨by
     apply (ENNReal.toReal_eq_toReal_iff' (by finiteness) (by simp)).mp
     norm_num [ENNReal.toReal_add, ENNReal.toReal_inv, ENNReal.toReal_div]⟩
-  have h := eLpNorm_le_eLpNorm_mul_eLpNorm'_of_norm (p := 3) (q := 3) (r := 3 / 2)
+  have h := eLpNorm_le_eLpNorm_mul_eLpNorm_of_norm (p := 3) (q := 3) (r := 3 / 2)
+    (fun a b : ℝ => a * b) 1 (by fun_prop)
     (leaf_memLp n 3 f).aestronglyMeasurable (leaf_memLp n 3 g).aestronglyMeasurable
-    (fun a b : ℝ => a * b) 1 (Filter.Eventually.of_forall (fun x => by simp [norm_mul]))
+    (Filter.Eventually.of_forall (fun x => by simp [norm_mul]))
   simp only [ENNReal.coe_one, one_mul] at h
   have hr := ENNReal.toReal_mono
-    (ENNReal.mul_ne_top (leaf_memLp n 3 f).2.ne (leaf_memLp n 3 g).2.ne) h
+    (ENNReal.mul_ne_top (leaf_memLp n 3 f).ne (leaf_memLp n 3 g).ne) h
   simpa only [ENNReal.toReal_mul, leaf_toReal_eLpNorm] using hr
 
 theorem lpNorm_sampleL2_square_three {ι : Type*} [Fintype ι]
@@ -255,8 +261,9 @@ theorem lpNorm_sampleL2_square_three {ι : Type*} [Fintype ι]
     lpNorm (fun x => sampleL2 (fun j => dyadicSquareFunction n (fun y => f y j) x))
         3 (leafUniform n) ≤ 2 * lpNorm (fun x => sampleL2 (f x)) 3 (leafUniform n) := by
   have h := dyadic_hilbert_square_three n f
-  rw [mixedNorm_eq_eLpNorm_norm, mixedNorm_eq_eLpNorm_norm] at h
-  have hr := ENNReal.toReal_mono (ENNReal.mul_ne_top (by simp) (leaf_memLp n 3 _).2.ne) h
+  rw [mixedNorm_eq_eLpNorm_norm _ _ _ _ (leaf_memLp _ 1 _).aestronglyMeasurable,
+    mixedNorm_eq_eLpNorm_norm _ _ _ _ (leaf_memLp _ 1 _).aestronglyMeasurable] at h
+  have hr := ENNReal.toReal_mono (ENNReal.mul_ne_top (by simp) (leaf_memLp n 3 _).ne) h
   simpa only [ENNReal.toReal_mul, ENNReal.toReal_ofNat,
     leaf_toReal_eLpNorm, sampleL2, PiLp.norm_eq_of_L2] using hr
 
@@ -277,7 +284,7 @@ theorem dyadic_vector_doob_three_two {ι : Type*} [Fintype ι]
   have hG : lpNorm G (3 / 2) (leafUniform n) ≤
       4 * lpNorm M 3 (leafUniform n) * lpNorm F 3 (leafUniform n) := by
     have h := eLpNorm_le_two_square_threeHalves n G (leafAverage_maxSum_zero n f)
-    have hr := ENNReal.toReal_mono (ENNReal.mul_ne_top (by simp) (leaf_memLp n _ _).2.ne) h
+    have hr := ENNReal.toReal_mono (ENNReal.mul_ne_top (by simp) (leaf_memLp n _ _).ne) h
     have hrev : lpNorm G (3 / 2) (leafUniform n) ≤
         2 * lpNorm (dyadicSquareFunction n G) (3 / 2) (leafUniform n) := by
       simpa only [ENNReal.toReal_mul, ENNReal.toReal_ofNat,
@@ -311,7 +318,8 @@ theorem dyadic_vector_doob_three_two {ι : Type*} [Fintype ι]
         (lpNorm M 3 (leafUniform n) + lpNorm F 3 (leafUniform n) / 4) :=
       mul_pos (by linarith) (by linarith)
     nlinarith [sq_nonneg (lpNorm F 3 (leafUniform n))]
-  rw [mixedNorm_eq_eLpNorm_norm, mixedNorm_eq_eLpNorm_norm]
+  rw [mixedNorm_eq_eLpNorm_norm _ _ _ _ (leaf_memLp _ 1 _).aestronglyMeasurable,
+    mixedNorm_eq_eLpNorm_norm _ _ _ _ (leaf_memLp _ 1 _).aestronglyMeasurable]
   change eLpNorm M 3 (leafUniform n) ≤ (65 / 4) * eLpNorm F 3 (leafUniform n)
   rw [← ofReal_lpNorm (leaf_memLp n 3 M), ← ofReal_lpNorm (leaf_memLp n 3 F)]
   simpa only [ENNReal.ofReal_mul (by norm_num : (0 : ℝ) ≤ (65 / 4)),

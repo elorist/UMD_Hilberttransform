@@ -1,4 +1,8 @@
-import HilbertUMD.Analysis.MixedNorm
+module
+
+public import HilbertUMD.Analysis.MixedNorm
+
+@[expose] public section
 
 /-! A pathwise Davis inequality with an explicit bounded predictable coefficient. -/
 

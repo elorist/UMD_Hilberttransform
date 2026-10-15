@@ -1,5 +1,9 @@
-import HilbertUMD.LowerBounds.BinaryLogitCoefficients
-import HilbertUMD.LowerBounds.BinaryShift
+module
+
+public import HilbertUMD.LowerBounds.BinaryLogitCoefficients
+public import HilbertUMD.LowerBounds.BinaryShift
+
+@[expose] public section
 
 /-! Identification of the scalar coefficient integrals with the witness. -/
 
@@ -31,10 +35,10 @@ theorem coefficient_eq_integral_sign {h : ℝ → ℝ} (hh : AllIntervalIntegrab
       (hh (1 / 2) 1)
   have hl : (fun t => h t * sign t) =ᵐ[volume.restrict (Ioo (0 : ℝ) (1 / 2))] (fun t => -h t) := by
     filter_upwards [ae_restrict_mem measurableSet_Ioo] with t ht
-    rw [sign, if_pos ht.2, mul_neg_one]
+    rw [sign, ite_eq_left ht.2, mul_neg_one]
   have hr : (fun t => h t * sign t) =ᵐ[volume.restrict (Ioo (1 / 2 : ℝ) 1)] h := by
     filter_upwards [ae_restrict_mem measurableSet_Ioo] with t ht
-    rw [sign, if_neg (not_lt.mpr ht.1.le), mul_one]
+    rw [sign, ite_eq_right (not_lt.mpr ht.1.le), mul_one]
   rw [unitMeasure_split,
     integral_add_measure (hlh.neg.congr hl.symm) (hrh.congr hr.symm),
     integral_congr_ae hl, integral_congr_ae hr, MeasureTheory.integral_neg]

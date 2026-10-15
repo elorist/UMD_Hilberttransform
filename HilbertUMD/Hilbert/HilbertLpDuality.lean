@@ -1,6 +1,10 @@
-import HilbertUMD.Hilbert.HilbertConstant
-import Mathlib.Analysis.Normed.Lp.SmoothApprox
-import Mathlib.MeasureTheory.Function.Holder
+module
+
+public import HilbertUMD.Hilbert.HilbertConstant
+public import Mathlib.Analysis.Normed.Lp.SmoothApprox
+public import Mathlib.MeasureTheory.Function.Holder
+
+@[expose] public section
 
 /-!
 # Hilbert skew duality by smooth approximation

@@ -1,4 +1,8 @@
-import HilbertUMD.UMD.UMD
+module
+
+public import HilbertUMD.UMD.UMD
+
+@[expose] public section
 
 /-! Transport finite-measure martingale tests into any sample-space universe.
 The lifted process has exactly the same local integral identities and Lp norms.

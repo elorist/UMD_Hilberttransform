@@ -1,4 +1,8 @@
-import HilbertUMD.Hilbert.HilbertL2
+module
+
+public import HilbertUMD.Hilbert.HilbertL2
+
+@[expose] public section
 
 /-!
 # Naturality of the Hilbert-valued Fourier and Hilbert transforms

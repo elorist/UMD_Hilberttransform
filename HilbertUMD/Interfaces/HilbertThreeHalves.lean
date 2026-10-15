@@ -1,4 +1,8 @@
-import HilbertUMD.Hilbert.HilbertThreeHalvesPV
+module
+
+public import HilbertUMD.Hilbert.HilbertThreeHalvesPV
+
+@[expose] public section
 
 /-! Scalar L(3/2) principal-value realization. The bounded operator and
 its norm estimate are constructed independently by Cotlar's identity,

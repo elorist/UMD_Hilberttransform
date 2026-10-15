@@ -1,7 +1,11 @@
-import HilbertUMD.Interfaces.HilbertThreeHalves
-import HilbertUMD.Hilbert.Cotlar
-import HilbertUMD.Interfaces.HilbertPV
-import HilbertUMD.Hilbert.HilbertLpDuality
+module
+
+public import HilbertUMD.Interfaces.HilbertThreeHalves
+public import HilbertUMD.Hilbert.Cotlar
+public import HilbertUMD.Interfaces.HilbertPV
+public import HilbertUMD.Hilbert.HilbertLpDuality
+
+@[expose] public section
 
 /-!
 Scalar real-line Hilbert-transform facts, used to prove the

@@ -1,6 +1,10 @@
-import Mathlib.Analysis.Fourier.LpSpace
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Data.Real.Sign
+module
+
+public import Mathlib.Analysis.Fourier.LpSpace
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Basic.Real.Sign
+
+@[expose] public section
 
 /-!
 # The scalar Hilbert transform on complex L²
@@ -32,7 +36,7 @@ theorem measurable_hilbertSymbol : Measurable hilbertSymbol := by
 
 abbrev ComplexL2 := Lp ℂ 2 (volume : Measure ℝ)
 
-private theorem hilbertSymbol_memLp (f : ComplexL2) :
+theorem hilbertSymbol_memLp (f : ComplexL2) :
     MemLp (fun ξ => hilbertSymbol ξ * f ξ) 2 volume := by
   apply (Lp.memLp f).congr_norm
   · exact measurable_hilbertSymbol.aestronglyMeasurable.mul (Lp.aestronglyMeasurable f)
@@ -67,7 +71,7 @@ theorem hilbertMultiplier_smul (c : ℂ) (f : ComplexL2) :
 @[simp] theorem norm_hilbertMultiplier (f : ComplexL2) : ‖hilbertMultiplier f‖ = ‖f‖ := by
   rw [Lp.norm_def, Lp.norm_def]
   congr 1
-  apply eLpNorm_congr_norm_ae
+  apply eLpNorm_congr_norm_ae (Lp.aestronglyMeasurable _) (Lp.aestronglyMeasurable _)
   filter_upwards [hilbertMultiplier_coeFn f] with ξ hξ
   simp [hξ]
 
@@ -121,7 +125,7 @@ instance [Nontrivial F] : Nontrivial (L2Space F) := by
     simp [f, norm_indicatorConstLp, measureReal_def]
   exact nontrivial_of_ne f 0 fun h => hc (norm_eq_zero.mp (by simpa [h] using hf.symm))
 
-private theorem symbol_memLp (f : L2Space F) :
+theorem symbol_memLp (f : L2Space F) :
     MemLp (fun ξ => hilbertSymbol ξ • f ξ) 2 volume := by
   apply (Lp.memLp f).congr_norm
   · exact measurable_hilbertSymbol.aestronglyMeasurable.smul (Lp.aestronglyMeasurable f)
@@ -155,7 +159,7 @@ theorem multiplier_smul (c : ℂ) (f : L2Space F) :
 @[simp] theorem norm_multiplier (f : L2Space F) : ‖multiplier F f‖ = ‖f‖ := by
   rw [Lp.norm_def, Lp.norm_def]
   congr 1
-  apply eLpNorm_congr_norm_ae
+  apply eLpNorm_congr_norm_ae (Lp.aestronglyMeasurable _) (Lp.aestronglyMeasurable _)
   filter_upwards [multiplier_coeFn F f] with ξ hξ
   simp [hξ, norm_smul]
 
@@ -320,7 +324,7 @@ theorem l2Re_coeFn (f : ComplexL2) : l2Re f =ᵐ[volume] (fun x => (f x).re) :=
 @[simp] theorem norm_l2OfReal (f : RealL2) : ‖l2OfReal f‖ = ‖f‖ := by
   rw [Lp.norm_def, Lp.norm_def]
   congr 1
-  apply eLpNorm_congr_norm_ae
+  apply eLpNorm_congr_norm_ae (Lp.aestronglyMeasurable _) (Lp.aestronglyMeasurable _)
   filter_upwards [l2OfReal_coeFn f] with x hx
   simp [hx]
 

@@ -1,7 +1,11 @@
-import Mathlib.Analysis.Normed.Operator.Extend
-import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-import Mathlib.MeasureTheory.Function.Holder
-import HilbertUMD.Analysis.ScalarThreeNorming
+module
+
+public import Mathlib.Analysis.Normed.Operator.Extend
+public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+public import Mathlib.MeasureTheory.Function.Holder
+public import HilbertUMD.Analysis.ScalarThreeNorming
+
+@[expose] public section
 
 /-!
 # Constructing an L3 operator from its action on L2 intersections

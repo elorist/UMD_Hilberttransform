@@ -1,5 +1,9 @@
-import HilbertUMD.LowerBounds.BinaryLogitPairing
-import HilbertUMD.UMD.BinaryWalsh
+module
+
+public import HilbertUMD.LowerBounds.BinaryLogitPairing
+public import HilbertUMD.UMD.BinaryWalsh
+
+@[expose] public section
 
 /-! The direct square-root lower bound for the logarithmic signed-dyadic witness.
 Every scalar integral, coefficient identity and Bessel step is proved locally. -/
@@ -84,7 +88,7 @@ theorem G_lower (n : ℕ) :
     exact (ENNReal.ofReal_le_ofReal hle).trans_eq (ENNReal.ofReal_toReal hG.eLpNorm_ne_top)
   · have ht : eLpNorm (G n) 2 unitMeasure = ⊤ := by
       by_contra ht
-      exact hG ⟨(measurable_G n).aestronglyMeasurable, lt_top_iff_ne_top.mpr ht⟩
+      exact hG (lt_top_iff_ne_top.mpr ht)
     rw [ht]
     exact le_top
 

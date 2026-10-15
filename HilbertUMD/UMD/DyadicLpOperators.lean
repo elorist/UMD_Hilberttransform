@@ -1,6 +1,10 @@
-import HilbertUMD.UMD.MartingaleProductEstimate
-import HilbertUMD.Analysis.ScalarLpOperators
-import Mathlib.Analysis.Normed.Module.FiniteDimension
+module
+
+public import HilbertUMD.UMD.MartingaleProductEstimate
+public import HilbertUMD.Analysis.ScalarLpOperators
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+
+@[expose] public section
 
 /-! Actual dyadic operator pairings and L2/L3 realizations. -/
 

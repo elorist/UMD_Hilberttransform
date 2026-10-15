@@ -1,8 +1,21 @@
 # Hilbert and UMD constants
 
 Lean formalization of **Theorem 1.1** of the
-[manuscript prepared for arXiv v1](paper/Hilbert-and-UMD-arxiv-v1.pdf) by
+[arXiv v1 manuscript](https://arxiv.org/abs/2609.10444v1) by
 Emiel Lorist and Jan van Neerven.
+The [fixed paper PDF](paper/Hilbert-and-UMD-arxiv-v1.pdf) is included in this repository.
+
+Start with [Challenge.lean](Challenge.lean) to read the complete formal
+statement of Theorem 1.1 independently of the proof library. It defines the
+concrete spaces and their Hilbert and UMD constants, and states the dimensions
+and all eight inequalities over both scalar fields. Its one deliberate
+`sorry` marks the statement to be proved.
+
+[Solution.lean](Solution.lean) proves exactly that statement using the full
+library. Comparator checks that the statement and its definitions match the
+Challenge, and that the proof uses only the three standard axioms. Lean,
+NanoDa and con-ron independently check the exported proof. See
+[running Comparator](#comparator) for the verification command.
 
 **This repository was generated with GPT-6 Astra, a large language model
 (LLM), under human direction.** This includes the Lean code, documentation,
@@ -79,6 +92,9 @@ is an optional extension, not unfinished work on Theorem 1.1.
 - `tests/MainTheorem.lean`: statement checks and transitive proof audit.
 - `tests/AxiomAudit.lean`: audit of every project declaration and its dependencies.
 - `tests/Definitions.lean`: checks for the dimensions, norms, and operator definitions.
+- `Challenge.lean`: independent mathematical statement for Comparator, importing only Mathlib.
+- `Solution.lean`: the same statement, proved using the full library.
+- `comparator.json` and `formalization.yaml`: comparison configuration and formalization metadata.
 
 Every mathematical module contributes declarations to the full theorem.
 Supporting facts required to elaborate its proofs are retained.
@@ -93,18 +109,20 @@ git clone https://github.com/elorist/UMD_Hilberttransform.git
 cd UMD_Hilberttransform
 ```
 
-With Lean installed, fetch the pinned mathlib cache and verify:
+With Lean and Python 3.10 or later installed, fetch the required pinned
+Mathlib modules and verify:
 
 ```sh
-lake exe cache get
+lake exe cache get $(python3 scripts/check_repo.py --cache-imports)
 bash scripts/verify.sh
 ```
 
-For a fresh Linux x86_64 installation, use `bash scripts/bootstrap.sh`.
+For a fresh Linux x86_64 installation with Python 3.10 or later, use
+`bash scripts/bootstrap.sh`.
 On other Unix platforms, install [elan](https://github.com/leanprover/elan)
 first; the repository's lean-toolchain file selects Lean's version.
 
-On Windows, use **PowerShell 7.2 or later** and Git:
+On Windows, use **PowerShell 7.2 or later**, Git, and Python 3.10 or later:
 
 ```powershell
 .\scripts\verify.ps1
@@ -115,6 +133,8 @@ bootstrap scripts verify a pinned elan installer checksum. Windows uses the
 user-wide `.elan` installation and stores installer downloads under
 `~/.cache/lean/bootstrap`; Unix bootstrap uses `.tools/`. Neither changes the
 machine PATH. The verification scripts also support an existing installation.
+The bootstrap scripts download cached Mathlib modules required by this project,
+which keeps the GitHub runner's disk usage below that of a full Mathlib cache.
 
 The default build includes the literal paper theorem, the internal asymptotic
 theorem, and the quantitative companion. The audit checks their statements,
@@ -128,13 +148,13 @@ Lean's kernel through `leanchecker`. Builds and Lean tests fail on warnings.
 The reports are written to `.lake/verification/`; Windows also records a
 `result.json` with source hashes, written only after every check passes.
 
-Lean is pinned to `leanprover/lean4:v4.33.0`; mathlib is pinned to
-`db584cd6d46c92f209a44c0f1c829460d327499d`. Transitive dependencies are pinned in
+Lean is pinned to `leanprover/lean4:v4.35.0`; mathlib is pinned to
+`56a005855ea17e0b0958f73ec801ae140b0a1679`. Transitive dependencies are pinned in
 `lake-manifest.json`. Building requires no `lake update`.
 
 The GitHub Actions workflow runs these checks automatically on Linux and
 Windows after each push or pull request. A green check means every required
-step passed. It caches the pinned toolchain, dependencies and build outputs,
+step passed. It caches this project's build outputs,
 and saves downloadable verification reports even when a check fails.
 It also checks publishable files, local links, the exact fixed paper PDF hash, and
 common credential patterns with
@@ -146,6 +166,29 @@ See [CITATION.cff](CITATION.cff) for citation metadata and
 
 See [the proof guide](docs/PROOF.md) for the route from the constructions to
 the eight inequalities.
+
+## Comparator
+
+The selected declaration is `HilbertUMD.Comparison.theorem_1_1`, with
+`propext`, `Classical.choice`, and `Quot.sound` as its permitted axioms.
+The ordinary build checks the proof library and Solution with warnings
+treated as errors; Comparator builds the separate Challenge with its
+expected statement hole.
+
+For the full comparison on Linux, install `bubblewrap` and run:
+
+```sh
+bash scripts/verify-comparator.sh
+```
+
+The script uses the Comparator bundled with the pinned Lean toolchain and
+requires its independent NanoDa and con-ron kernels as well. GitHub runs
+this check in the Linux job and saves its log and result in the verification
+artifact. A successful ordinary Lean build alone is not a successful
+Comparator run.
+
+[formalization.yaml](formalization.yaml) records the scope, sources,
+licences, automation and review status of the formalization.
 
 ## License
 

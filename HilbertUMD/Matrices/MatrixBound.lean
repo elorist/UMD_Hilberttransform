@@ -1,5 +1,9 @@
-import HilbertUMD.Matrices.MatrixEnergyCompatible
-import HilbertUMD.Analysis.CubicConclusion
+module
+
+public import HilbertUMD.Matrices.MatrixEnergyCompatible
+public import HilbertUMD.Analysis.CubicConclusion
+
+@[expose] public section
 
 /-! The common matrix L² upper estimate follows from the energy bound and
 the cubic lemma, including its proved duality and interpolation inputs.

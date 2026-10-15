@@ -1,7 +1,11 @@
-import HilbertUMD.Analysis.Cubic
-import Mathlib.Analysis.Normed.Lp.PiLp
-import Mathlib.MeasureTheory.SpecificCodomains.Pi
-import Mathlib.Analysis.Normed.Module.FiniteDimension
+module
+
+public import HilbertUMD.Analysis.Cubic
+public import Mathlib.Analysis.Normed.Lp.PiLp
+public import Mathlib.MeasureTheory.SpecificCodomains.Pi
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+
+@[expose] public section
 
 /-! Actual Lp realizations and the positive-testing part of the cubic lemma.
 All results here are checked independently of external norming or interpolation.
@@ -76,7 +80,7 @@ theorem l1Norm_absLp {p : ℝ≥0∞} [Fact (1 ≤ p)] (f : Space (ι := ι) μ 
     l1Norm μ p (absLp μ f) = l1Norm μ p f := by
   rw [l1Norm_apply, l1Norm_apply, Lp.norm_def, Lp.norm_def]
   congr 1
-  apply eLpNorm_congr_norm_ae
+  apply eLpNorm_congr_norm_ae (Lp.memLp _).aestronglyMeasurable (Lp.memLp _).aestronglyMeasurable
   filter_upwards [(toL1 (ι := ι)).coeFn_compLpL (absLp μ f),
     (toL1 (ι := ι)).coeFn_compLpL f, coeFn_absLp μ f] with x ha hf habs
   rw [ha, hf, habs, norm_toL1, norm_toL1]
@@ -120,11 +124,12 @@ theorem norm_squareLp (f : Space (ι := ι) μ 3) : ‖squareLp μ f‖ = ‖f�
   have he : eLpNorm (fun x i => (f x i) ^ 2) (3 / 2) μ = eLpNorm f 3 μ ^ 2 := by
     calc
       _ = eLpNorm (fun x => ‖f x‖ ^ (2 : ℝ)) (3 / 2) μ := by
-        apply eLpNorm_congr_norm_ae
+        apply eLpNorm_congr_norm_ae (memLp_square μ f).aestronglyMeasurable
+          ((Lp.memLp f).aestronglyMeasurable.norm.aemeasurable.pow_const (2 : ℝ)).aestronglyMeasurable
         filter_upwards with x
         rw [norm_vec_square, Real.rpow_two, Real.norm_eq_abs, abs_of_nonneg (sq_nonneg _)]
       _ = _ := by
-        rw [eLpNorm_norm_rpow _ (by norm_num)]
+        rw [eLpNorm_norm_rpow _ (Lp.memLp f).aestronglyMeasurable (by norm_num)]
         norm_num [ENNReal.rpow_two]
         congr 2
         exact ENNReal.div_mul_cancel (by norm_num) (by simp)

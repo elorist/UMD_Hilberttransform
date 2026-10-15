@@ -1,4 +1,8 @@
-import HilbertUMD.LowerBounds.BinaryLogitDefs
+module
+
+public import HilbertUMD.LowerBounds.BinaryLogitDefs
+
+@[expose] public section
 
 /-! Finite alternating-coefficient inequalities, independent of integration. -/
 

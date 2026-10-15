@@ -1,5 +1,9 @@
-import HilbertUMD.Analysis.CubicLp
-import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
+module
+
+public import HilbertUMD.Analysis.CubicLp
+public import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
+
+@[expose] public section
 
 /-! The L³ norms of the two positive parts share the original cubic mass. -/
 
@@ -18,12 +22,12 @@ theorem integrable_norm_cube (f : Lp E 3 μ) : Integrable (fun x => ‖f x‖ ^ 
 
 theorem integral_norm_cube (f : Lp E 3 μ) : (∫ x, ‖f x‖ ^ 3 ∂μ) = ‖f‖ ^ 3 := by
   have he : eLpNorm (fun x => ‖f x‖ ^ (3 : ℝ)) 1 μ = eLpNorm f 3 μ ^ 3 := by
-    rw [eLpNorm_norm_rpow _ (by norm_num)]
+    rw [eLpNorm_norm_rpow _ (Lp.memLp f).aestronglyMeasurable (by norm_num)]
     norm_num [ENNReal.rpow_natCast]
   have hm : AEStronglyMeasurable (fun x => ‖f x‖ ^ (3 : ℝ)) μ := by
     simpa using (integrable_norm_cube μ f).aestronglyMeasurable
   have hi := lpNorm_one_eq_integral_norm hm
-  rw [← toReal_eLpNorm hm, he, ENNReal.toReal_pow, ← Lp.norm_def] at hi
+  rw [← toReal_eLpNorm, he, ENNReal.toReal_pow, ← Lp.norm_def] at hi
   simpa only [Real.rpow_ofNat, norm_pow, norm_norm] using hi.symm
 
 theorem l1Norm_positiveParts_cube (f : Space (ι := ι) μ 3) :

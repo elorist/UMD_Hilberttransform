@@ -1,5 +1,9 @@
-import HilbertUMD.Hilbert.HilbertOperatorSpaces
-import HilbertUMD.Hilbert.HilbertPVBounds
+module
+
+public import HilbertUMD.Hilbert.HilbertOperatorSpaces
+public import HilbertUMD.Hilbert.HilbertPVBounds
+
+@[expose] public section
 
 /-!
 # Linear Hilbert bounds for graph spaces

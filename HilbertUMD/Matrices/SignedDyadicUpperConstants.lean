@@ -1,5 +1,9 @@
-import HilbertUMD.Matrices.SignedDyadicUpper
-import HilbertUMD.Hilbert.HilbertMatrixDataSharp
+module
+
+public import HilbertUMD.Matrices.SignedDyadicUpper
+public import HilbertUMD.Hilbert.HilbertMatrixDataSharp
+
+@[expose] public section
 
 /-! The Hilbert matrix bound uses the complex cubic estimate directly,
 preserving its constant when the diagonal term is added. -/

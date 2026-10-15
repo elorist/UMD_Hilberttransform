@@ -1,5 +1,9 @@
-import HilbertUMD.Hilbert.HilbertInterval
-import HilbertUMD.Hilbert.HilbertL2Extension
+module
+
+public import HilbertUMD.Hilbert.HilbertInterval
+public import HilbertUMD.Hilbert.HilbertL2Extension
+
+@[expose] public section
 
 /-!
 # Proved interval formula and derived finite-dimensional `L²` extension

@@ -1,7 +1,11 @@
-import HilbertUMD.Main.Statement
-import HilbertUMD.Main.LowerBounds
-import HilbertUMD.Main.Transfer
-import HilbertUMD.UMD.RealComplexSpaces
+module
+
+public import HilbertUMD.Main.Statement
+public import HilbertUMD.Main.LowerBounds
+public import HilbertUMD.Main.Transfer
+public import HilbertUMD.UMD.RealComplexSpaces
+
+@[expose] public section
 
 /-! Choose common positive comparison constants and assemble the eight
 inequalities from the lower bounds and the two sharp graph upper bounds. -/

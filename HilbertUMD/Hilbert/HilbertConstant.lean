@@ -1,4 +1,8 @@
-import HilbertUMD.Hilbert.HilbertL2
+module
+
+public import HilbertUMD.Hilbert.HilbertL2
+
+@[expose] public section
 
 /-!
 # Principal-value Hilbert transform constants
@@ -138,9 +142,17 @@ theorem HilbertBound.mono {p : ℝ≥0∞} {T : E →L[𝕜] F} {C D : ℝ≥0}
 
 omit [NormedSpace ℝ E] [NormedSpace ℝ F] in
 private theorem hilbert_eLpNorm_map_le (A : E →L[𝕜] F) (f : ℝ → E) (p : ℝ≥0∞) :
-    eLpNorm (fun x => A (f x)) p volume ≤ (‖A‖₊ : ℝ≥0∞) * eLpNorm f p volume :=
-  eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul
-    (Eventually.of_forall fun x => A.le_opNNNorm (f x)) p
+    eLpNorm (fun x => A (f x)) p volume ≤ (‖A‖₊ : ℝ≥0∞) * eLpNorm f p volume := by
+  by_cases hA : A = 0
+  · simp [hA]
+  by_cases hf : AEStronglyMeasurable f volume
+  · exact eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul
+      (A.continuous.comp_aestronglyMeasurable hf)
+      (Eventually.of_forall fun x => A.le_opNNNorm (f x)) p
+  · have hnorm : (‖A‖₊ : ℝ≥0∞) ≠ 0 := by
+      simpa using hA
+    rw [eLpNorm_of_not_aestronglyMeasurable hf, ENNReal.mul_top hnorm]
+    exact le_top
 
 theorem HilbertBound.precomp {G : Type*} [NormedAddCommGroup G]
     [NormedSpace ℝ G] [NormedSpace 𝕜 G]

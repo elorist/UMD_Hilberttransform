@@ -1,7 +1,11 @@
-import HilbertUMD.Hilbert.HilbertConstant
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
+module
+
+public import HilbertUMD.Hilbert.HilbertConstant
+public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+
+@[expose] public section
 
 /-! Localization of the real-line principal-value transform from L² to L³. -/
 
@@ -17,7 +21,7 @@ def cutoff (n : ℕ) (f : ℝ → ℝ) : ℝ → ℝ :=
   (Icc (-(n : ℝ)) n).indicator f
 
 theorem cutoff_memLp {f : ℝ → ℝ} {p : ℝ≥0∞} (hf : MemLp f p volume) (n : ℕ) :
-    MemLp (cutoff n f) p volume := hf.indicator measurableSet_Icc
+    MemLp (cutoff n f) p volume := hf.indicator measurableSet_Icc.nullMeasurableSet
 
 theorem cutoff_memLp_two {f : ℝ → ℝ} (hf : MemLp f 3 volume) (n : ℕ) :
     MemLp (cutoff n f) 2 volume := by

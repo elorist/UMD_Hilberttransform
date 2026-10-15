@@ -1,5 +1,9 @@
-import HilbertUMD.Foundations.Matrices
-import HilbertUMD.Foundations.Geometry
+module
+
+public import HilbertUMD.Foundations.Matrices
+public import HilbertUMD.Foundations.Geometry
+
+@[expose] public section
 
 /-! The finite dyadic witness for the signed matrix lower bound. -/
 
@@ -45,7 +49,7 @@ theorem dyadicBlock_eq_of_mem (n k : ℕ) (i j : Leaf n) (h : j ∈ dyadicBlock 
         Function.Embedding.inl_apply, Function.Embedding.inr_apply,
         Sum.inl.injEq, Sum.inr.injEq, Sum.inl_ne_inr, Sum.inr_ne_inl, exists_false,
         and_false, exists_eq_right] at h ⊢
-      all_goals first | contradiction | rw [ih k _ _ h]
+      all_goals rw [ih k _ _ h]
 
 theorem dyadicBlock_subset (n k l : ℕ) (hkl : k ≤ l) (i : Leaf n) :
     dyadicBlock n l i ⊆ dyadicBlock n k i := by

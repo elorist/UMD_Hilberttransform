@@ -1,5 +1,9 @@
-import HilbertUMD.Hilbert.HilbertConstant
-import HilbertUMD.Foundations.OperatorSpaces
+module
+
+public import HilbertUMD.Hilbert.HilbertConstant
+public import HilbertUMD.Foundations.OperatorSpaces
+
+@[expose] public section
 
 /-! Proved graph-space factorizations for the principal-value Hilbert bounds. -/
 

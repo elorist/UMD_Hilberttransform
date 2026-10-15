@@ -1,7 +1,11 @@
-import HilbertUMD.UMD.DyadicLower
-import HilbertUMD.UMD.UMD
-import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
-import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
+module
+
+public import HilbertUMD.UMD.DyadicLower
+public import HilbertUMD.UMD.UMD
+public import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
+public import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
+
+@[expose] public section
 
 /-! The uniform finite probability model for the dyadic witness. -/
 
@@ -178,7 +182,8 @@ theorem eLpNorm_differenceSum_liftedBasisProcess (n : ℕ) :
   have hn : ∀ i : Leaf (n + 1), ‖signedLeafLift n (l1BasisWitness (𝕜 := 𝕜) n) i‖ = ‖(1 : ℝ)‖ := by
     intro i
     cases i <;> simp [signedLeafLift]
-  rw [eLpNorm_congr_norm_ae (Filter.Eventually.of_forall hn)]
+  rw [eLpNorm_congr_norm_ae (leaf_memLp _ 1 _).aestronglyMeasurable
+    aestronglyMeasurable_const (Filter.Eventually.of_forall hn)]
   rw [eLpNorm_const' _ (by norm_num) (by norm_num)]
   rw [(leafUniform_probability (n + 1)).measure_univ]
   simp

@@ -1,5 +1,9 @@
-import HilbertUMD.Analysis.CubicLp
-import Mathlib.Analysis.Complex.Basic
+module
+
+public import HilbertUMD.Analysis.CubicLp
+public import Mathlib.Analysis.Complex.Basic
+
+@[expose] public section
 
 /-! Actual complexification on finite-coordinate Lp spaces. -/
 
@@ -82,7 +86,7 @@ theorem norm_ofRealLp (p : ℝ≥0∞) [Fact (1 ≤ p)] (f : Space (ι := ι) μ
     ‖ofRealLp μ p f‖ = ‖f‖ := by
   rw [Lp.norm_def, Lp.norm_def]
   congr 1
-  apply eLpNorm_congr_norm_ae
+  apply eLpNorm_congr_norm_ae (Lp.memLp _).aestronglyMeasurable (Lp.memLp _).aestronglyMeasurable
   filter_upwards [(ofRealVec (ι := ι)).coeFn_compLpL f] with x hx
   change (ofRealLp μ p f) x = ofRealVec (f x) at hx
   rw [hx, norm_ofRealVec]
@@ -275,7 +279,7 @@ theorem complexL1Norm_ofRealLp {p : ℝ≥0∞} [Fact (1 ≤ p)] (f : Space (ι 
     ‖(toL1 (ι := ι)).compLpL p μ f‖
   rw [Lp.norm_def, Lp.norm_def]
   congr 1
-  apply eLpNorm_congr_norm_ae
+  apply eLpNorm_congr_norm_ae (Lp.memLp _).aestronglyMeasurable (Lp.memLp _).aestronglyMeasurable
   filter_upwards [(complexToL1 (ι := ι)).coeFn_compLpL (ofRealLp μ p f),
     (ofRealVec (ι := ι)).coeFn_compLpL f, (toL1 (ι := ι)).coeFn_compLpL f] with x hc ho hr
   change (ofRealLp μ p f) x = _ at ho

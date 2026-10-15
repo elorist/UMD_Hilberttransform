@@ -8,6 +8,7 @@ if [[ "$(uname -s)-$(uname -m)" != Linux-x86_64 ]]; then
   exit 1
 fi
 command -v git >/dev/null
+command -v python3 >/dev/null
 export ELAN_HOME="$PWD/.tools/elan"
 export PATH="$ELAN_HOME/bin:$PATH"
 if [[ ! -x "$ELAN_HOME/bin/elan" ]]; then
@@ -19,5 +20,7 @@ if [[ ! -x "$ELAN_HOME/bin/elan" ]]; then
   .tools/elan-installer/elan-init -y --no-modify-path --default-toolchain none
 fi
 elan toolchain install "$(tr -d '\r\n' < lean-toolchain)"
-lake exe cache get
+imports=$(python3 scripts/check_repo.py --cache-imports)
+mapfile -t mathlib_imports <<< "$imports"
+lake exe cache get "${mathlib_imports[@]}"
 bash scripts/verify.sh

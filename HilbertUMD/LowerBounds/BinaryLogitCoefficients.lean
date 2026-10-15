@@ -1,6 +1,10 @@
-import HilbertUMD.LowerBounds.BinaryAverages
-import HilbertUMD.LowerBounds.BinaryLogitIntegrals
-import HilbertUMD.LowerBounds.BinaryLogitArithmetic
+module
+
+public import HilbertUMD.LowerBounds.BinaryAverages
+public import HilbertUMD.LowerBounds.BinaryLogitIntegrals
+public import HilbertUMD.LowerBounds.BinaryLogitArithmetic
+
+@[expose] public section
 
 /-! The nonnegative decreasing scalar Rademacher coefficients of the logit. -/
 

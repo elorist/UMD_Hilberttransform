@@ -1,7 +1,11 @@
-import HilbertUMD.Analysis.LpDualRepresentation
-import Mathlib.MeasureTheory.Function.Holder
-import Mathlib.MeasureTheory.Function.AEEqOfIntegral
-import Mathlib.MeasureTheory.Function.LpSpace.Indicator
+module
+
+public import HilbertUMD.Analysis.LpDualRepresentation
+public import Mathlib.MeasureTheory.Function.Holder
+public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
+public import Mathlib.MeasureTheory.Function.LpSpace.Indicator
+
+@[expose] public section
 
 /-!
 The dual endpoint in the original cubic argument. The required Bochner dual

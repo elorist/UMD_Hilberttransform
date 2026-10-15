@@ -1,5 +1,9 @@
-import HilbertUMD.LowerBounds.BinaryAverages
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+module
+
+public import HilbertUMD.LowerBounds.BinaryAverages
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+
+@[expose] public section
 
 /-! Measure and integral identities for the binary map on the unit interval. -/
 
@@ -35,7 +39,8 @@ theorem map_affine_volume (a b : ℝ) (ha : a ≠ 0) :
       rw [Measure.map_map ht hm]
       rfl
     _ = _ := by
-      rw [Real.map_volume_mul_left ha, Measure.map_smul, map_add_right_eq_self]
+      rw [Real.map_volume_mul_left ha, Measure.map_smul _ ht.aemeasurable,
+        map_add_right_eq_self]
 
 theorem map_double_left :
     (volume.restrict (Ioo (0 : ℝ) (1/2))).map (fun t => 2*t) =
@@ -72,13 +77,13 @@ theorem tau_measurePreserving : MeasurePreserving tau unitMeasure unitMeasure :=
     rw [← map_double_left]
     apply Measure.map_congr
     filter_upwards [ae_restrict_mem measurableSet_Ioo] with t ht
-    exact if_pos ht.2
+    exact ite_eq_left ht.2
   have hr : (volume.restrict (Ioo (1/2 : ℝ) 1)).map tau =
       (1/2 : ℝ≥0∞) • unitMeasure := by
     rw [← map_double_right]
     apply Measure.map_congr
     filter_upwards [ae_restrict_mem measurableSet_Ioo] with t ht
-    exact if_neg (not_lt.mpr ht.1.le)
+    exact ite_eq_right (not_lt.mpr ht.1.le)
   rw [hl, hr, ← add_smul]
   rw [ENNReal.add_halves, one_smul]
 
@@ -152,11 +157,11 @@ theorem integral_unit_split_inverse {h : ℝ → ℝ} (hh : Integrable h unitMea
   ring
 
 theorem tau_left_inverse {t : ℝ} (ht : t ∈ Ioo (0 : ℝ) 1) : tau (t/2) = t := by
-  rw [tau, if_pos (by linarith [ht.2])]
+  rw [tau, ite_eq_left (by linarith [ht.2])]
   ring
 
 theorem tau_right_inverse {t : ℝ} (ht : t ∈ Ioo (0 : ℝ) 1) : tau ((t+1)/2) = t := by
-  rw [tau, if_neg (by linarith [ht.1])]
+  rw [tau, ite_eq_right (by linarith [ht.1])]
   ring
 
 theorem integral_comp_tau {h : ℝ → ℝ} (hh : Integrable h unitMeasure) :

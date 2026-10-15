@@ -1,6 +1,10 @@
-import HilbertUMD.Hilbert.HilbertConstant
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-import Mathlib.MeasureTheory.Function.L2Space
+module
+
+public import HilbertUMD.Hilbert.HilbertConstant
+public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import Mathlib.MeasureTheory.Function.L2Space
+
+@[expose] public section
 
 noncomputable section
 open MeasureTheory Set Filter

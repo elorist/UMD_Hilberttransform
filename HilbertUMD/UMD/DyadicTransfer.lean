@@ -1,5 +1,9 @@
-import HilbertUMD.UMD.DyadicTerminal
-import HilbertUMD.Foundations.OperatorSpaces
+module
+
+public import HilbertUMD.UMD.DyadicTerminal
+public import HilbertUMD.Foundations.OperatorSpaces
+
+@[expose] public section
 
 /-! Checked finite dyadic scalar operators used to apply the sharp transfer. -/
 

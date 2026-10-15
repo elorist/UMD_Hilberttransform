@@ -1,4 +1,8 @@
-import HilbertUMD.UMD.LeafBlocks
+module
+
+public import HilbertUMD.UMD.LeafBlocks
+
+@[expose] public section
 
 /-! Binary coordinates and the sigma algebras of tree prefixes. -/
 

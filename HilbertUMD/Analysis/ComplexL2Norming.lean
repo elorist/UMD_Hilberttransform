@@ -1,5 +1,9 @@
-import HilbertUMD.Analysis.CubicComplex
-import Mathlib.MeasureTheory.Function.Holder
+module
+
+public import HilbertUMD.Analysis.CubicComplex
+public import Mathlib.MeasureTheory.Function.Holder
+
+@[expose] public section
 
 /-!
 # Finite-coordinate complex L² norming
@@ -111,12 +115,12 @@ theorem exists_norming_test (μ : Measure S) [Nonempty ι] (w : Lp (ι → ℂ) 
     rw [CubicLp.norm_complexToL1, (hun (w x)).1]
   have hg : MemLp g 2 μ := (Lp.memLp w).of_le
     ((CubicLp.complexToL1 (ι := ι)).continuous.comp_aestronglyMeasurable
-      (hu.comp_aemeasurable (Lp.memLp w).1.aemeasurable).aestronglyMeasurable)
+      (hu.comp_aemeasurable (Lp.memLp w).aestronglyMeasurable.aemeasurable).aestronglyMeasurable)
     (Eventually.of_forall (fun x => (hgn x).le))
   refine ⟨hg.toLp g, ?_, ?_⟩
   · rw [Lp.norm_def, Lp.norm_def]
     congr 1
-    apply eLpNorm_congr_norm_ae
+    apply eLpNorm_congr_norm_ae (Lp.memLp _).aestronglyMeasurable (Lp.memLp _).aestronglyMeasurable
     filter_upwards [hg.coeFn_toLp] with x hx
     rw [hx, hgn]
   · rw [pairing_apply]

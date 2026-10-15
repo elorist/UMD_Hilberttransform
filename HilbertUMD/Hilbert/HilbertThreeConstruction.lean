@@ -1,7 +1,11 @@
-import HilbertUMD.Hilbert.HilbertTwoPV
-import HilbertUMD.Hilbert.HilbertThreeDual
-import HilbertUMD.Hilbert.HilbertThreePV
-import HilbertUMD.Interfaces.HilbertThreeHalves
+module
+
+public import HilbertUMD.Hilbert.HilbertTwoPV
+public import HilbertUMD.Hilbert.HilbertThreeDual
+public import HilbertUMD.Hilbert.HilbertThreePV
+public import HilbertUMD.Interfaces.HilbertThreeHalves
+
+@[expose] public section
 
 /-! The scalar L3 PV realization follows from the existing L(3/2)
 realization and L2 PV extension. The conjugate norm bound and the passage

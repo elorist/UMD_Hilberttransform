@@ -1,6 +1,10 @@
-import HilbertUMD.Analysis.ScalarLpDualRepresentation
-import HilbertUMD.Analysis.MixedLpNorming
-import HilbertUMD.Hilbert.HilbertThreeDual
+module
+
+public import HilbertUMD.Analysis.ScalarLpDualRepresentation
+public import HilbertUMD.Analysis.MixedLpNorming
+public import HilbertUMD.Hilbert.HilbertThreeDual
+
+@[expose] public section
 
 /-! Isometric scalar duality between real L3 and L(3/2). -/
 
@@ -21,7 +25,7 @@ private theorem norm_embedLp {p : ℝ≥0∞} [Fact (1 ≤ p)] (w : Lp ℝ p μ)
     ‖embed.compLpL p μ w‖ = ‖w‖ := by
   rw [Lp.norm_def, Lp.norm_def]
   congr 1
-  apply eLpNorm_congr_norm_ae
+  apply eLpNorm_congr_norm_ae (Lp.memLp _).aestronglyMeasurable (Lp.memLp _).aestronglyMeasurable
   filter_upwards [embed.coeFn_compLpL w] with x hx
   rw [hx]
   exact pi_norm_const _
@@ -30,7 +34,7 @@ private theorem norm_projectLp {p : ℝ≥0∞} [Fact (1 ≤ p)] (g : Lp (Unit �
     ‖project.compLpL p μ g‖ = CubicLp.l1Norm μ p g := by
   rw [CubicLp.l1Norm_apply, Lp.norm_def, Lp.norm_def]
   congr 1
-  apply eLpNorm_congr_norm_ae
+  apply eLpNorm_congr_norm_ae (Lp.memLp _).aestronglyMeasurable (Lp.memLp _).aestronglyMeasurable
   filter_upwards [project.coeFn_compLpL g, (CubicLp.toL1 (ι := Unit)).coeFn_compLpL g] with x hp ht
   rw [hp, ht, CubicLp.norm_toL1]
   simp [project, Real.norm_eq_abs]

@@ -1,5 +1,9 @@
-import HilbertUMD.Transfer.Transfer
-import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
+module
+
+public import HilbertUMD.Transfer.Transfer
+public import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
+
+@[expose] public section
 
 /-!
 # Transfer on genuine Bochner L2 spaces
@@ -64,7 +68,7 @@ theorem fibreNorm_bound (J : Vec 𝕜 n →L[𝕜] F) (K : Vec 𝕜 n →L[𝕜]
 
 theorem lp_norm_sq_integral {B : Type*} [NormedAddCommGroup B] (f : Lp B 2 μ) :
     ‖f‖ ^ 2 = ∫ t, ‖f t‖ ^ 2 ∂μ := by
-  rw [Lp.norm_def, toReal_eLpNorm (Lp.aestronglyMeasurable f),
+  rw [Lp.norm_def, toReal_eLpNorm,
     lpNorm_eq_integral_norm_rpow_toReal (by norm_num) (by norm_num)
       (Lp.aestronglyMeasurable f)]
   norm_num only [ENNReal.toReal_ofNat, Real.rpow_two]

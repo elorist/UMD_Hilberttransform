@@ -1,6 +1,10 @@
-import HilbertUMD.UMD.FiniteFiltrationModel
-import HilbertUMD.UMD.WeightedTreeMeasure
-import HilbertUMD.UMD.WeightedDyadicBound
+module
+
+public import HilbertUMD.UMD.FiniteFiltrationModel
+public import HilbertUMD.UMD.WeightedTreeMeasure
+public import HilbertUMD.UMD.WeightedDyadicBound
+
+@[expose] public section
 
 /-! Transfer the weighted binary-tree bound to finite probability filtrations. -/
 

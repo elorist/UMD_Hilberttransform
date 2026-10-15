@@ -1,6 +1,10 @@
-import Mathlib.MeasureTheory.Function.LpSpace.Complete
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
-import Mathlib.Tactic
+module
+
+public import Mathlib.MeasureTheory.Function.LpSpace.Complete
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.Tactic
+
+@[expose] public section
 
 /-! Scalar L3 membership from bounded dual pairings on L2 intersect L(3/2).
 The proof uses explicit bounded truncations, power tests and Fatou's lemma.
@@ -31,16 +35,17 @@ theorem self_pair_powerTest (f : S → ℝ) (x : S) :
     _ = |f x| ^ 2 * |f x| := by rw [sq_abs]
     _ = _ := by ring
 
-theorem powerTest_eLpNorm (f : S → ℝ) :
+theorem powerTest_eLpNorm (f : S → ℝ) (hf : AEStronglyMeasurable f μ) :
     eLpNorm (powerTest f) (3 / 2) μ = (eLpNorm f 3 μ) ^ 2 := by
   calc
     _ = eLpNorm (fun x => ‖f x‖ ^ (2 : ℝ)) (3 / 2) μ := by
-      apply eLpNorm_congr_norm_ae
+      apply eLpNorm_congr_norm_ae (f := powerTest f) (hf.mul hf.norm)
+        (hf.norm.aemeasurable.pow_const (2 : ℝ)).aestronglyMeasurable
       filter_upwards with x
       rw [norm_powerTest, Real.rpow_two]
       exact (Real.norm_of_nonneg (sq_nonneg ‖f x‖)).symm
     _ = _ := by
-      rw [eLpNorm_norm_rpow _ (by norm_num)]
+      rw [eLpNorm_norm_rpow _ hf (by norm_num)]
       norm_num [ENNReal.rpow_two]
       congr 2
       exact ENNReal.div_mul_cancel (by norm_num) (by simp)
@@ -61,18 +66,18 @@ theorem bounded_two_mem_three {f : S → ℝ} (hf : MemLp f 2 μ) {N : ℝ}
     (_hN : 0 ≤ N) (hbound : ∀ x, ‖f x‖ ≤ N) : MemLp f 3 μ := by
   have hcube : Integrable (fun x => ‖f x‖ ^ 3) μ := by
     apply ((hf.integrable_norm_pow (by norm_num : (2 : ℕ) ≠ 0)).const_mul N).mono'
-      (hf.1.norm.pow 3)
+      (hf.aestronglyMeasurable.norm.pow 3)
     filter_upwards with x
     change ‖‖f x‖ ^ 3‖ ≤ N * ‖f x‖ ^ 2
     rw [Real.norm_eq_abs, abs_of_nonneg (by positivity)]
     have h := mul_le_mul_of_nonneg_right (hbound x) (sq_nonneg ‖f x‖)
     nlinarith
-  apply (integrable_norm_rpow_iff hf.1 (p := 3) (by norm_num) (by norm_num)).mp
+  apply (integrable_norm_rpow_iff hf.aestronglyMeasurable (p := 3) (by norm_num) (by norm_num)).mp
   simpa using hcube
 
 theorem powerTest_mem_two {f : S → ℝ} (hf : MemLp f 2 μ) {N : ℝ}
     (hbound : ∀ x, ‖f x‖ ≤ N) : MemLp (powerTest f) 2 μ := by
-  apply hf.of_le_mul (c := N) (hf.1.mul hf.1.norm)
+  apply hf.of_le_mul (c := N) (hf.aestronglyMeasurable.mul hf.aestronglyMeasurable.norm)
   filter_upwards with x
   change ‖powerTest f x‖ ≤ N * ‖f x‖
   rw [norm_powerTest]
@@ -81,9 +86,9 @@ theorem powerTest_mem_two {f : S → ℝ} (hf : MemLp f 2 μ) {N : ℝ}
 
 theorem powerTest_mem_three_halves {f : S → ℝ} (hf : MemLp f 3 μ) :
     MemLp (powerTest f) (3 / 2) μ := by
-  refine ⟨hf.1.mul hf.1.norm, ?_⟩
-  rw [powerTest_eLpNorm]
-  exact ENNReal.pow_lt_top hf.2
+  change eLpNorm (powerTest f) (3 / 2) μ < ∞
+  rw [powerTest_eLpNorm _ _ hf.aestronglyMeasurable]
+  exact ENNReal.pow_lt_top hf
 
 theorem measurable_truncate {h : S → ℝ} (hh : Measurable h) (N : ℝ) :
     Measurable (truncate h N) :=
@@ -91,7 +96,7 @@ theorem measurable_truncate {h : S → ℝ} (hh : Measurable h) (N : ℝ) :
 
 theorem truncate_mem_two {h : S → ℝ} (hh : Measurable h) (h2 : MemLp h 2 μ) (N : ℝ) :
     MemLp (truncate h N) 2 μ :=
-  h2.indicator (measurableSet_le hh.norm measurable_const)
+  MemLp.indicator (measurableSet_le hh.norm measurable_const).nullMeasurableSet h2
 
 omit [MeasurableSpace S] in
 theorem norm_truncate_le {h : S → ℝ} {N : ℝ} (hN : 0 ≤ N) (x : S) :
@@ -129,7 +134,8 @@ theorem truncate_three_bound {h : S → ℝ} (hh : Measurable h) (h2 : MemLp h 2
     rw [← integral_norm_cube μ hf3]
     apply integral_congr_ae
     exact Eventually.of_forall (pairing_truncate h N)
-  rw [hpair, abs_of_nonneg (by positivity), powerTest_eLpNorm, ENNReal.toReal_pow] at hb
+  rw [hpair, abs_of_nonneg (by positivity), powerTest_eLpNorm _ _ hf3.aestronglyMeasurable,
+    ENNReal.toReal_pow] at hb
   have hle : (eLpNorm f 3 μ).toReal ≤ M := by
     by_cases hz : (eLpNorm f 3 μ).toReal = 0
     · simpa [hz] using hM
@@ -148,6 +154,7 @@ theorem memLp_three_of_pairing_measurable {h : S → ℝ} (hh : Measurable h)
     apply Lp.eLpNorm_le_of_ae_tendsto (u := atTop) (f := fun n : ℕ => truncate h n)
       (Eventually.of_forall fun n => truncate_three_bound μ hh h2 hM hbound n (Nat.cast_nonneg n))
       (fun n => (measurable_truncate hh n).aestronglyMeasurable)
+      hh.aestronglyMeasurable
     apply Eventually.of_forall
     intro x
     have hev : ∀ᶠ n : ℕ in atTop, ‖h x‖ ≤ (n : ℝ) := by
@@ -156,7 +163,7 @@ theorem memLp_three_of_pairing_measurable {h : S → ℝ} (hh : Measurable h)
     apply tendsto_const_nhds.congr'
     filter_upwards [hev] with n hn
     exact (Set.indicator_of_mem (show x ∈ {y | ‖h y‖ ≤ (n : ℝ)} from hn) h).symm
-  exact ⟨⟨hh.aestronglyMeasurable, hn.trans_lt ENNReal.ofReal_lt_top⟩, hn⟩
+  exact ⟨hn.trans_lt ENNReal.ofReal_lt_top, hn⟩
 
 /-- Bounded integral tests against L2 intersect L(3/2) force both L3
 membership and the exact L3 bound. This holds for every measure. -/
@@ -165,9 +172,9 @@ theorem memLp_three_of_pairing {h : S → ℝ} (hh : MemLp h 2 μ)
     (hbound : ∀ g : S → ℝ, MemLp g 2 μ → MemLp g (3 / 2) μ →
       |∫ x, h x * g x ∂μ| ≤ M * (eLpNorm g (3 / 2) μ).toReal) :
     MemLp h 3 μ ∧ eLpNorm h 3 μ ≤ ENNReal.ofReal M := by
-  let h' := hh.1.mk h
-  have he : h =ᵐ[μ] h' := hh.1.ae_eq_mk
-  have hm : Measurable h' := hh.1.stronglyMeasurable_mk.measurable
+  let h' := hh.aestronglyMeasurable.mk h
+  have he : h =ᵐ[μ] h' := hh.aestronglyMeasurable.ae_eq_mk
+  have hm : Measurable h' := hh.aestronglyMeasurable.stronglyMeasurable_mk.measurable
   have h2 : MemLp h' 2 μ := hh.ae_eq he
   have hb : ∀ g : S → ℝ, MemLp g 2 μ → MemLp g (3 / 2) μ →
       |∫ x, h' x * g x ∂μ| ≤ M * (eLpNorm g (3 / 2) μ).toReal := by

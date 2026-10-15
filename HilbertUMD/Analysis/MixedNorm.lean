@@ -1,7 +1,11 @@
-import Mathlib.Analysis.Normed.Lp.PiLp
-import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
-import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
-import Mathlib.Tactic
+module
+
+public import Mathlib.Analysis.Normed.Lp.PiLp
+public import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
+public import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
+public import Mathlib.Tactic
+
+@[expose] public section
 
 /-! Actual mixed Lp norms over a measure space and an arbitrary finite
 coordinate index. These definitions contain no analytic assumptions. -/
@@ -18,36 +22,40 @@ def mixedNorm (p q : ℝ≥0∞) [Fact (1 ≤ q)] (μ : Measure Ω) (f : Ω → 
   eLpNorm (fun s => (WithLp.toLp q (f s) : PiLp q (fun _ : ι => E))) p μ
 
 theorem mixedNorm_eq_eLpNorm_norm (p q : ℝ≥0∞) [Fact (1 ≤ q)]
-    (μ : Measure Ω) (f : Ω → ι → E) :
+    (μ : Measure Ω) (f : Ω → ι → E)
+    (hf : AEStronglyMeasurable (fun s => (WithLp.toLp q (f s) : PiLp q (fun _ : ι => E))) μ) :
     mixedNorm p q μ f =
       eLpNorm (fun s => ‖(WithLp.toLp q (f s) : PiLp q (fun _ : ι => E))‖) p μ := by
   symm
-  exact eLpNorm_norm _
+  exact eLpNorm_norm _ hf
 
-theorem mixedNorm_one (p : ℝ≥0∞) (μ : Measure Ω) (f : Ω → ι → E) :
+theorem mixedNorm_one (p : ℝ≥0∞) (μ : Measure Ω) (f : Ω → ι → E)
+    (hf : AEStronglyMeasurable (fun s => (WithLp.toLp 1 (f s) : PiLp 1 (fun _ : ι => E))) μ) :
     mixedNorm p 1 μ f = eLpNorm (fun s => ∑ j, ‖f s j‖) p μ := by
-  rw [mixedNorm_eq_eLpNorm_norm]
+  rw [mixedNorm_eq_eLpNorm_norm _ _ _ _ hf]
   simp only [PiLp.norm_eq_of_L1]
 
-theorem mixedNorm_two (p : ℝ≥0∞) (μ : Measure Ω) (f : Ω → ι → E) :
+theorem mixedNorm_two (p : ℝ≥0∞) (μ : Measure Ω) (f : Ω → ι → E)
+    (hf : AEStronglyMeasurable (fun s => (WithLp.toLp 2 (f s) : PiLp 2 (fun _ : ι => E))) μ) :
     mixedNorm p 2 μ f = eLpNorm (fun s => Real.sqrt (∑ j, ‖f s j‖ ^ 2)) p μ := by
-  rw [mixedNorm_eq_eLpNorm_norm]
+  rw [mixedNorm_eq_eLpNorm_norm _ _ _ _ hf]
   simp only [PiLp.norm_eq_of_L2]
 
 theorem mixedNorm_mono (p q : ℝ≥0∞) [Fact (1 ≤ q)] (μ : Measure Ω)
     (f g : Ω → ι → E)
+    (hf : AEStronglyMeasurable (fun s => (WithLp.toLp q (f s) : PiLp q (fun _ : ι => E))) μ)
     (h : ∀ᵐ s ∂μ, ‖(WithLp.toLp q (f s) : PiLp q (fun _ : ι => E))‖ ≤
       ‖(WithLp.toLp q (g s) : PiLp q (fun _ : ι => E))‖) :
-    mixedNorm p q μ f ≤ mixedNorm p q μ g := eLpNorm_mono_ae h
+    mixedNorm p q μ f ≤ mixedNorm p q μ g := eLpNorm_mono_ae hf h
 
 theorem mixedNorm_add_le (p q : ℝ≥0∞) [Fact (1 ≤ q)] (μ : Measure Ω)
     (hp : 1 ≤ p) (f g : Ω → ι → E)
-    (hf : AEStronglyMeasurable (fun s => (WithLp.toLp q (f s) : PiLp q (fun _ : ι => E))) μ)
-    (hg : AEStronglyMeasurable (fun s => (WithLp.toLp q (g s) : PiLp q (fun _ : ι => E))) μ) :
+    (_hf : AEStronglyMeasurable (fun s => (WithLp.toLp q (f s) : PiLp q (fun _ : ι => E))) μ)
+    (_hg : AEStronglyMeasurable (fun s => (WithLp.toLp q (g s) : PiLp q (fun _ : ι => E))) μ) :
     mixedNorm p q μ (f + g) ≤ mixedNorm p q μ f + mixedNorm p q μ g := by
   let F : Ω → PiLp q (fun _ : ι => E) := fun s => WithLp.toLp q (f s)
   let G : Ω → PiLp q (fun _ : ι => E) := fun s => WithLp.toLp q (g s)
-  have h := eLpNorm_add_le (p := p) (f := F) (g := G) hf hg hp
+  have h := eLpNorm_add_le (p := p) (μ := μ) (f := F) (g := G) hp
   have heq : F + G = (fun s => (WithLp.toLp q ((f + g) s) : PiLp q (fun _ : ι => E))) := by
     funext s
     exact (WithLp.toLp_add q (f s) (g s)).symm
@@ -72,8 +80,8 @@ theorem mixedNorm_mul_le (p q r : ℝ≥0∞) [ENNReal.HolderTriple p q r]
       mixedNorm p 2 μ f * mixedNorm q 2 μ g := by
   let b : PiLp 2 (fun _ : ι => ℝ) → PiLp 2 (fun _ : ι => ℝ) → PiLp 1 (fun _ : ι => ℝ) :=
     fun a c => WithLp.toLp 1 (fun j => a j * c j)
-  have h := eLpNorm_le_eLpNorm_mul_eLpNorm'_of_norm (p := p) (q := q) (r := r)
-    hf hg b 1 (Filter.Eventually.of_forall (fun s => by
+  have h := eLpNorm_le_eLpNorm_mul_eLpNorm_of_norm (p := p) (q := q) (r := r)
+    b 1 (by dsimp [b]; fun_prop) hf hg (Filter.Eventually.of_forall (fun s => by
       simpa only [NNReal.coe_one, one_mul] using norm_toLp_one_mul_le (f s) (g s)))
   simpa only [mixedNorm, b, ENNReal.coe_one, one_mul] using h
 

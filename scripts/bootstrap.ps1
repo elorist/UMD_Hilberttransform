@@ -4,6 +4,7 @@ $taskProject = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 Push-Location -LiteralPath $taskProject
 try {
     if (-not (Get-Command git -ErrorAction SilentlyContinue)) { throw 'Install Git before running this script.' }
+    if (-not (Get-Command python -ErrorAction SilentlyContinue)) { throw 'Install Python 3.10 or later before running this script.' }
     . (Join-Path $PSScriptRoot 'lean-env.ps1')
     $taskTools = Join-Path ([Environment]::GetFolderPath('UserProfile')) '.cache/lean/bootstrap'
     New-Item -ItemType Directory -Path $taskTools -Force | Out-Null
@@ -24,7 +25,9 @@ try {
     . (Join-Path $PSScriptRoot 'lean-env.ps1')
     & elan toolchain install (Get-Content -LiteralPath 'lean-toolchain' -Raw).Trim()
     if ($LASTEXITCODE -ne 0) { throw 'Lean installation failed.' }
-    & lake exe cache get
+    $taskImports = @(& python scripts/check_repo.py --cache-imports)
+    if ($LASTEXITCODE -ne 0 -or $taskImports.Count -eq 0) { throw 'Could not identify the required Mathlib cache.' }
+    & lake exe cache get @taskImports
     if ($LASTEXITCODE -ne 0) { throw 'Mathlib cache download failed.' }
     & (Join-Path $PSScriptRoot 'verify.ps1')
 } finally {

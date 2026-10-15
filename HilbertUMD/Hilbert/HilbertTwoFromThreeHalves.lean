@@ -1,10 +1,14 @@
-import HilbertUMD.Interfaces.HilbertPV
-import HilbertUMD.Hilbert.HilbertTwoKernel
-import HilbertUMD.Hilbert.HilbertThreePV
-import Mathlib.Analysis.Normed.Lp.SmoothApprox
-import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
-import Mathlib.Analysis.Calculus.BumpFunction.Basic
-import Mathlib.MeasureTheory.Function.Holder
+module
+
+public import HilbertUMD.Interfaces.HilbertPV
+public import HilbertUMD.Hilbert.HilbertTwoKernel
+public import HilbertUMD.Hilbert.HilbertThreePV
+public import Mathlib.Analysis.Normed.Lp.SmoothApprox
+public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
+public import Mathlib.Analysis.Calculus.BumpFunction.Basic
+public import Mathlib.MeasureTheory.Function.Holder
+
+@[expose] public section
 
 /-! Recover the scalar L2 principal value from a lower-exponent realization.
 Smooth multiplication gives compatibility on compactly supported L2 inputs;
@@ -46,9 +50,9 @@ theorem agrees_test (f : ℝ → ℝ) (hf : ContDiff ℝ 1 f) (hc : HasCompactSu
 while also controlling the lower exponent. -/
 theorem agrees_mul_test (ψ : ℝ → ℝ) (hψ : ContDiff ℝ 1 ψ)
     (hcψ : HasCompactSupport ψ) (f : RealL2) :
-    R (((Lp.memLp f).mul' (hilbertTest_memLp hψ hcψ 6)).toLp (fun x => ψ x * f x))
+    R (((hilbertTest_memLp hψ hcψ 6).fun_mul (Lp.memLp f)).toLp (fun x => ψ x * f x))
       =ᵐ[volume]
-    realHilbertL2 (((Lp.memLp f).mul' (hilbertTest_memLp hψ hcψ ⊤)).toLp
+    realHilbertL2 (((hilbertTest_memLp hψ hcψ ⊤).fun_mul (Lp.memLp f)).toLp
       (fun x => ψ x * f x)) := by
   let Mq : RealL2 →L[ℝ] Lp ℝ (3 / 2) volume :=
     (ContinuousLinearMap.mul ℝ ℝ).holderL volume 6 2 (3 / 2)
@@ -66,9 +70,9 @@ theorem agrees_mul_test (ψ : ℝ → ℝ) (hψ : ContDiff ℝ 1 ψ)
       ((hilbertTest_memLp hψ hcψ ⊤).toLp ψ) u,
       (hilbertTest_memLp hψ hcψ ⊤).coeFn_toLp] with x hx hψx
     simpa [M2, hψx] using hx
-  have heMq : Mq f = ((Lp.memLp f).mul' (hilbertTest_memLp hψ hcψ 6)).toLp
+  have heMq : Mq f = ((hilbertTest_memLp hψ hcψ 6).fun_mul (Lp.memLp f)).toLp
       (fun x => ψ x * f x) := Lp.ext ((hMq f).trans (MemLp.coeFn_toLp _).symm)
-  have heM2 : M2 f = ((Lp.memLp f).mul' (hilbertTest_memLp hψ hcψ ⊤)).toLp
+  have heM2 : M2 f = ((hilbertTest_memLp hψ hcψ ⊤).fun_mul (Lp.memLp f)).toLp
       (fun x => ψ x * f x) := Lp.ext ((hM2 f).trans (MemLp.coeFn_toLp _).symm)
   rw [← heMq, ← heM2]
   apply ae_eq_of_integral_contDiff_smul_eq
@@ -146,10 +150,10 @@ theorem cutoff_pv {f : ℝ → ℝ} (hf : MemLp f 2 volume) (n : ℕ) :
           (show |x| ≤ (n : ℝ) + 1 by linarith [abs_le.mpr hxn]))
       rw [hψx, one_mul]
     · simp [cutoff, hxn]
-  have hq : ((Lp.memLp u).mul' (hilbertTest_memLp ψ.contDiff ψ.hasCompactSupport 6)).toLp
+  have hq : ((hilbertTest_memLp ψ.contDiff ψ.hasCompactSupport 6).fun_mul (Lp.memLp u)).toLp
       (fun x => ψ x * u x) = (cutoff_memLp_three_halves hf n).toLp (cutoff n f) :=
     Lp.ext ((MemLp.coeFn_toLp _).trans (hmul.trans (MemLp.coeFn_toLp _).symm))
-  have h2 : ((Lp.memLp u).mul' (hilbertTest_memLp ψ.contDiff ψ.hasCompactSupport ⊤)).toLp
+  have h2 : ((hilbertTest_memLp ψ.contDiff ψ.hasCompactSupport ⊤).fun_mul (Lp.memLp u)).toLp
       (fun x => ψ x * u x) = u :=
     Lp.ext ((MemLp.coeFn_toLp _).trans (hmul.trans (MemLp.coeFn_toLp _).symm))
   have ha := agrees_mul_test R hR ψ ψ.contDiff ψ.hasCompactSupport u
@@ -195,7 +199,7 @@ theorem awayKernel_memLp_two (x : ℝ) : MemLp (awayKernel x) 2 volume := by
   have hs : MeasurableSet {y : ℝ | 1 < |x-y|} :=
     (isOpen_lt continuous_const (by fun_prop)).measurableSet
   have hm : MemLp ({y : ℝ | 1 < |x-y|}.indicator (fun y => (x-y)⁻¹)) 2 volume :=
-    (memLp_indicator_iff_restrict hs).mpr
+    (memLp_indicator_iff_restrict hs.nullMeasurableSet).mpr
     (hilbertKernel_memLp_two (by norm_num : (0 : ℝ) < 1) x)
   apply hm.ae_eq
   exact Eventually.of_forall fun y => by simp [awayKernel, indicator_apply]

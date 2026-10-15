@@ -1,4 +1,8 @@
-import HilbertUMD.UMD.DyadicSampled
+module
+
+public import HilbertUMD.UMD.DyadicSampled
+
+@[expose] public section
 
 /-! Splitting a uniform binary tree into a prefix block and a remaining tree. -/
 

@@ -1,5 +1,9 @@
-import HilbertUMD.Matrices.MatrixScalarData
-import HilbertUMD.Hilbert.HilbertLpCompatibility
+module
+
+public import HilbertUMD.Matrices.MatrixScalarData
+public import HilbertUMD.Hilbert.HilbertLpCompatibility
+
+@[expose] public section
 
 /-!
 The real-line Hilbert scalar data for the manuscript's common dyadic matrix

@@ -1,9 +1,13 @@
-import HilbertUMD.Analysis.ScalarThreeNorming
-import HilbertUMD.Analysis.CubicLp
-import Mathlib.Analysis.Calculus.ParametricIntegral
-import Mathlib.Analysis.Calculus.LocalExtr.Basic
-import Mathlib.Topology.Order.IsLUB
-import Mathlib.Analysis.InnerProductSpace.NormPow
+module
+
+public import HilbertUMD.Analysis.ScalarThreeNorming
+public import HilbertUMD.Analysis.CubicLp
+public import Mathlib.Analysis.Calculus.ParametricIntegral
+public import Mathlib.Analysis.Calculus.LocalExtr.Basic
+public import Mathlib.Topology.Order.IsLUB
+public import Mathlib.Analysis.InnerProductSpace.NormPow
+
+@[expose] public section
 
 /-! Scalar real L³ dual representation, proved by minimizing the cubic energy. -/
 
@@ -130,10 +134,12 @@ private theorem hasDerivAt_integral_cube (f g : Lp ℝ 3 μ) :
     (F' := fun t x => 3 * ‖f x + t * g x‖ * (f x + t * g x) * g x)
     (bound := B) (s := Metric.ball 0 1) (x₀ := 0)
     (Metric.ball_mem_nhds _ (by norm_num))
-    (Eventually.of_forall (fun t => ((Lp.memLp f).1.add ((Lp.memLp g).1.const_mul t)).norm.pow 3))
+    (Eventually.of_forall (fun t => ((Lp.memLp f).aestronglyMeasurable.add
+      ((Lp.memLp g).aestronglyMeasurable.const_mul t)).norm.pow 3))
     (by simpa using (Lp.memLp f).integrable_norm_pow (by norm_num : (3 : ℕ) ≠ 0))
     (by simpa only [zero_mul, add_zero, Pi.mul_apply] using!
-      (((Lp.memLp f).1.norm.const_mul 3).mul (Lp.memLp f).1).mul (Lp.memLp g).1)
+      (((Lp.memLp f).aestronglyMeasurable.norm.const_mul 3).mul
+        (Lp.memLp f).aestronglyMeasurable).mul (Lp.memLp g).aestronglyMeasurable)
     ?_ hB (Eventually.of_forall (fun x t _ => hasDerivAt_cube (f x) (g x) t))
   · simpa only [zero_mul, add_zero] using hd.2
   · filter_upwards with x

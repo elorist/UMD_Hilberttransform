@@ -1,4 +1,8 @@
-import HilbertUMD.UMD.DyadicTransfer
+module
+
+public import HilbertUMD.UMD.DyadicTransfer
+
+@[expose] public section
 
 /-!
 # Finite dyadic martingale products

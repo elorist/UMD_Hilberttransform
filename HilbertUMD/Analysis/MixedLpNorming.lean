@@ -1,4 +1,8 @@
-import HilbertUMD.Analysis.CubicLp
+module
+
+public import HilbertUMD.Analysis.CubicLp
+
+@[expose] public section
 
 /-! Explicit finite-coordinate norming tests for Bochner Lp spaces. -/
 
@@ -82,10 +86,10 @@ theorem exists_power_norming_test {S ι : Type*} [MeasurableSpace S]
     exact hmul
   let a : S → ℝ := fun x => ‖w x‖ ^ (p.toReal - 1)
   have ha : MemLp a q μ := by
-    refine ⟨((Lp.memLp w).1.norm.aemeasurable.pow_const _).aestronglyMeasurable, ?_⟩
+    change eLpNorm a q μ < ∞
     dsimp [a]
-    rw [eLpNorm_norm_rpow _ hr, hexp]
-    exact ENNReal.rpow_lt_top_of_nonneg hr.le (Lp.memLp w).2.ne
+    rw [eLpNorm_norm_rpow _ (Lp.memLp w).aestronglyMeasurable hr, hexp]
+    exact ENNReal.rpow_lt_top_of_nonneg hr.le (Lp.memLp w).ne
   have ha0 (x : S) : 0 ≤ a x := Real.rpow_nonneg (norm_nonneg _) _
   obtain ⟨u, hu, hu_norm⟩ := exists_measurable_norming_vector (ι := ι)
   let g : S → ι → ℝ := fun x i => a x * u (w x) i
@@ -110,9 +114,9 @@ theorem exists_power_norming_test {S ι : Type*} [MeasurableSpace S]
     apply memLp_pi_iff.mpr
     intro i
     apply ha.of_le
-    · exact (ha.1.aemeasurable.mul
+    · exact (ha.aestronglyMeasurable.aemeasurable.mul
         ((measurable_pi_apply i).comp hu |>.comp_aemeasurable
-          (Lp.memLp w).1.aemeasurable)).aestronglyMeasurable
+          (Lp.memLp w).aestronglyMeasurable.aemeasurable)).aestronglyMeasurable
     · filter_upwards with x
       change |g x i| ≤ |a x|
       rw [abs_of_nonneg (ha0 x), ← hg_sum x]
@@ -121,12 +125,12 @@ theorem exists_power_norming_test {S ι : Type*} [MeasurableSpace S]
   · rw [l1Norm_apply, Lp.norm_def]
     have he : eLpNorm ((toL1 (ι := ι)).compLpL q μ (hg.toLp g)) q μ =
         eLpNorm a q μ := by
-      apply eLpNorm_congr_norm_ae
+      apply eLpNorm_congr_norm_ae (Lp.memLp _).aestronglyMeasurable ha.aestronglyMeasurable
       filter_upwards [(toL1 (ι := ι)).coeFn_compLpL (hg.toLp g), hg.coeFn_toLp] with x hx hxg
       rw [hx, hxg, norm_toL1, hg_sum, Real.norm_eq_abs, abs_of_nonneg (ha0 x)]
     rw [he]
     dsimp [a]
-    rw [eLpNorm_norm_rpow _ hr, hexp, ← ENNReal.toReal_rpow, Lp.norm_def]
+    rw [eLpNorm_norm_rpow _ (Lp.memLp w).aestronglyMeasurable hr, hexp, ← ENNReal.toReal_rpow, Lp.norm_def]
   · calc
       _ = ∫ x, ‖w x‖ ^ p.toReal ∂μ := by
         apply integral_congr_ae

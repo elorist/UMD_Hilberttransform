@@ -1,4 +1,8 @@
-import HilbertUMD.Hilbert.HilbertTwoKernel
+module
+
+public import HilbertUMD.Hilbert.HilbertTwoKernel
+
+@[expose] public section
 
 /-!
 # Truncated kernels on L(3/2)
@@ -22,10 +26,11 @@ theorem hilbertKernel_memLp_three {ε : ℝ} (hε : 0 < ε) (x : ℝ) :
     MemLp (fun y : ℝ => (x - y)⁻¹) 3
       (volume.restrict {y : ℝ | ε < |x - y|}) := by
   have htwo := hilbertKernel_memLp_two hε x
-  apply (integrable_norm_rpow_iff htwo.1 (p := 3) (by norm_num) (by norm_num)).mp
+  apply (integrable_norm_rpow_iff htwo.aestronglyMeasurable (p := 3)
+    (by norm_num) (by norm_num)).mp
   norm_num only [ENNReal.toReal_ofNat, Real.rpow_ofNat]
   have hi := (htwo.integrable_norm_pow (by norm_num : (2 : ℕ) ≠ 0)).const_mul ε⁻¹
-  apply hi.mono' (htwo.1.norm.pow 3)
+  apply hi.mono' (htwo.aestronglyMeasurable.norm.pow 3)
   filter_upwards [ae_restrict_mem
     ((isOpen_lt continuous_const (by fun_prop)).measurableSet :
       MeasurableSet {y : ℝ | ε < |x - y|})] with y hy

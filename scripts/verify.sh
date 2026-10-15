@@ -14,5 +14,5 @@ lake env lean -DwarningAsError=true tests/Definitions.lean 2>&1 | tee .lake/veri
 lake env lean -DwarningAsError=true tests/AxiomAudit.lean 2>&1 | tee .lake/verification/axioms.log
 grep -qF 'PASS: whole-project axiom audit' .lake/verification/axioms.log
 # Each replay loads a full import environment. Bound memory use on CI runners.
-LEAN_NUM_THREADS=1 lake env leanchecker -v HilbertUMD 2>&1 | tee .lake/verification/kernel.log
+LEAN_NUM_THREADS=1 lake env leanchecker -v HilbertUMD Solution 2>&1 | tee .lake/verification/kernel.log
 echo 'Verified the public theorems, definitions, all project axioms, and compiled proof kernel replay.'

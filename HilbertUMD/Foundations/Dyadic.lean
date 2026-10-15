@@ -1,6 +1,10 @@
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Analysis.Seminorm
-import Mathlib.Tactic
+module
+
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
+public import Mathlib.Tactic
+
+@[expose] public section
 
 /-! Finite dyadic geometry for Hilbert transform and UMD constants. -/
 

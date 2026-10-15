@@ -31,4 +31,5 @@ preferred-citation:
     - family-names: van Neerven
       given-names: Jan
   year: 2026
-  notes: "Manuscript prepared for arXiv v1 (9 September 2026), included as paper/Hilbert-and-UMD-arxiv-v1.pdf under CC BY 4.0. The Lean certification target is Theorem 1.1."
+  url: "https://arxiv.org/abs/2609.10444v1"
+  notes: "arXiv v1 (9 September 2026), included as paper/Hilbert-and-UMD-arxiv-v1.pdf under CC BY 4.0. The Lean certification target is Theorem 1.1."

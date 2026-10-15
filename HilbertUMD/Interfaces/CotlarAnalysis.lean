@@ -1,8 +1,12 @@
-import HilbertUMD.Hilbert.HilbertConstant
-import HilbertUMD.Analysis.MixedNorm
-import HilbertUMD.Hilbert.HilbertThreeConstruction
-import HilbertUMD.Hilbert.CotlarExtension
-import HilbertUMD.Analysis.GaussianAmplification
+module
+
+public import HilbertUMD.Hilbert.HilbertConstant
+public import HilbertUMD.Analysis.MixedNorm
+public import HilbertUMD.Hilbert.HilbertThreeConstruction
+public import HilbertUMD.Hilbert.CotlarExtension
+public import HilbertUMD.Analysis.GaussianAmplification
+
+@[expose] public section
 
 /-!
 Real-line scalar analysis used by `Cotlar.lean`.

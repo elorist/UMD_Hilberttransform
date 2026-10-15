@@ -1,9 +1,13 @@
-import HilbertUMD.LowerBounds.HilbertLower
-import HilbertUMD.Hilbert.HilbertTwoPV
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.Analysis.Complex.ExponentialBounds
-import Mathlib.Analysis.Real.Pi.Bounds
-import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
+module
+
+public import HilbertUMD.LowerBounds.HilbertLower
+public import HilbertUMD.Hilbert.HilbertTwoPV
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.Analysis.Complex.ExponentialBounds
+public import Mathlib.Analysis.Real.Pi.Bounds
+public import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
+
+@[expose] public section
 
 /-! The paper's coefficient 1/7 from the existing uniform interval witness. -/
 
@@ -15,7 +19,8 @@ namespace HilbertUMD
 private theorem scalar_interval_log_norm :
     eLpNorm (fun t : ℝ => Real.log |t / (t - 1)| / Real.pi) 2 volume = 1 := by
   let f : ℝ → ℝ := (Ico (0 : ℝ) 1).indicator (fun _ => 1)
-  have hf : MemLp f 2 volume := memLp_indicator_const 2 measurableSet_Ico 1 (Or.inr (by simp))
+  have hf : MemLp f 2 volume :=
+    memLp_indicator_const 2 measurableSet_Ico.nullMeasurableSet 1 (Or.inr (by simp))
   have hp := realHilbertL2_pv_all f hf
   have hi := Interfaces.interval_hilbert_pv ℝ 0 1 (by norm_num)
   have he : (realHilbertL2 (hf.toLp f) : ℝ → ℝ) =ᵐ[volume]
@@ -23,7 +28,7 @@ private theorem scalar_interval_log_norm :
     simpa only [sub_zero, RCLike.ofReal_real_eq_id, id_eq] using hp.unique hi
   rw [← eLpNorm_congr_ae he, ← Lp.enorm_def, realHilbertL2.enorm_map,
     Lp.enorm_def, eLpNorm_congr_ae hf.coeFn_toLp]
-  simp [f, eLpNorm_indicator_const, measurableSet_Ico]
+  simp [f, eLpNorm_indicator_const measurableSet_Ico.nullMeasurableSet]
 
 variable {𝕜 : Type*} [RCLike 𝕜]
 
@@ -43,6 +48,7 @@ theorem summation_HilbertBound_one_lower (n : ℕ) {C : ℝ≥0}
   have hd : eLpNorm (fun t : ℝ => Real.log |t / (t - 1)| / Real.pi) 2 volume ≤
       eLpNorm g 2 volume := by
     apply eLpNorm_mono_ae
+      (show Measurable (fun t : ℝ => Real.log |t / (t - 1)| / Real.pi) by fun_prop).aestronglyMeasurable
     filter_upwards [summation_pv_coordinate n hpv k] with t ht
     calc
       _ = ‖g t k‖ := by rw [ht, he, RCLike.norm_ofReal, Real.norm_eq_abs]
@@ -132,10 +138,11 @@ theorem summation_HilbertBound_unit_log_lower (n : ℕ) {C : ℝ≥0}
       self_mem_ae_restrict measurableSet_Ioo] with t ht hs
     exact ht hs
   have hnorm : eLpNorm g 1 μ ≤ (C : ℝ≥0∞) :=
-    (eLpNorm_le_eLpNorm_of_exponent_le (by norm_num : (1 : ℝ≥0∞) ≤ 2) hgm.1).trans
+    (eLpNorm_le_eLpNorm_of_exponent_le (by norm_num : (1 : ℝ≥0∞) ≤ 2)).trans
       ((eLpNorm_mono_measure _ Measure.restrict_le_self).trans hgn)
   have hr := ENNReal.toReal_mono (by simp : (C : ℝ≥0∞) ≠ ⊤) hnorm
-  rw [toReal_eLpNorm hgm.1, lpNorm_one_eq_integral_norm hgm.1, ENNReal.coe_toReal] at hr
+  rw [toReal_eLpNorm, lpNorm_one_eq_integral_norm hgm.aestronglyMeasurable,
+    ENNReal.coe_toReal] at hr
   exact hi.trans hr
 
 theorem summation_HilbertBound_seventh (n : ℕ) {C : ℝ≥0}

@@ -1,7 +1,11 @@
-import HilbertUMD.LowerBounds.HilbertLower
-import HilbertUMD.Hilbert.HilbertOperatorSpaces
-import HilbertUMD.LowerBounds.BinaryLogitDefs
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+module
+
+public import HilbertUMD.LowerBounds.HilbertLower
+public import HilbertUMD.Hilbert.HilbertOperatorSpaces
+public import HilbertUMD.LowerBounds.BinaryLogitDefs
+public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+
+@[expose] public section
 
 /-! Direct signed-dyadic Hilbert lower bound from the interval-step witness.
 No Hilbert/UMD quadratic comparison is used. -/
@@ -130,13 +134,13 @@ theorem intervalLog_unit (t : ℝ) : intervalLog 0 1 t = BinaryLogit.g t := by
 
 theorem ae_comp_tau {P : ℝ → Prop} (h : ∀ᵐ t : ℝ ∂volume, P t) :
     ∀ᵐ t : ℝ ∂volume, P (BinaryLogit.tau t) := by
-  have hmul : Measure.QuasiMeasurePreserving (fun t : ℝ => 2*t) volume volume :=
+  have hmul : QuasiMeasurePreserving (fun t : ℝ => 2*t) volume volume :=
     Measure.quasiMeasurePreserving_smul (volume : Measure ℝ) (by norm_num : (2 : ℝ) ≠ 0)
-  have hshift : Measure.QuasiMeasurePreserving (fun t : ℝ => 2*t-1) volume volume := by
+  have hshift : QuasiMeasurePreserving (fun t : ℝ => 2*t-1) volume volume := by
     simpa only [Function.comp_def, sub_eq_add_neg] using
       (measurePreserving_add_right (volume : Measure ℝ) (-1)).quasiMeasurePreserving.comp hmul
   filter_upwards [hmul.ae h, hshift.ae h] with t hl hr
-  by_cases ht : t < 1/2 <;> simp only [BinaryLogit.tau, ht, if_true, if_false] <;> assumption
+  by_cases ht : t < 1/2 <;> simp only [BinaryLogit.tau, ht, ite_true, ite_false] <;> assumption
 
 def selected : (n : ℕ) → ℝ → Leaf n
   | 0, _ => 0
@@ -156,15 +160,15 @@ theorem rowValue_succ (n : ℕ) (t : ℝ)
       (-1 : ℝ)^(n+1) * (BinaryLogit.g t - BinaryLogit.g (BinaryLogit.tau t)) := by
   rw [total_succ, logVec_left, logVec_right] at hp
   by_cases ht : t < 1/2
-  · simp only [BinaryLogit.tau, ht, if_true] at hc ⊢
-    rw [rowValue, selected, if_pos ht]
+  · simp only [BinaryLogit.tau, ht, ite_true] at hc ⊢
+    rw [rowValue, selected, ite_eq_left ht]
     change signedDyadic n (left (logVec (n+1) t)) (selected n (2*t)) +
       (-1 : ℝ)^(n+1) * total (right (logVec (n+1) t)) = _
     rw [logVec_left, logVec_right]
     unfold rowValue
     rw [show total (logVec n (2*t-1)) = BinaryLogit.g t - BinaryLogit.g (2*t) by linarith]
-  · simp only [BinaryLogit.tau, ht, if_false] at hc ⊢
-    rw [rowValue, selected, if_neg ht]
+  · simp only [BinaryLogit.tau, ht, ite_false] at hc ⊢
+    rw [rowValue, selected, ite_eq_right ht]
     change (-1 : ℝ)^(n+1) * total (left (logVec (n+1) t)) +
       signedDyadic n (right (logVec (n+1) t)) (selected n (2*t-1)) = _
     rw [logVec_left, logVec_right]
@@ -214,7 +218,7 @@ theorem G_norm_le_output (n : ℕ) {g : ℝ → Vec 𝕜 n}
     eLpNorm (BinaryLogit.G n) 2 BinaryLogit.unitMeasure ≤ eLpNorm g 2 volume := by
   calc
     _ ≤ eLpNorm g 2 BinaryLogit.unitMeasure := by
-      apply eLpNorm_mono_ae
+      apply eLpNorm_mono_ae (BinaryLogit.measurable_G n).aestronglyMeasurable
       filter_upwards [ae_restrict_of_ae (signed_pv_selected n hg)] with t ht
       have h := norm_le_pi_norm (g t) (selected n t)
       rw [ht, RCLike.norm_ofReal] at h

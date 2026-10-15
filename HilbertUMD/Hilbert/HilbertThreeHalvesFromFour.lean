@@ -1,7 +1,11 @@
-import HilbertUMD.Hilbert.HilbertThreeFromFour
-import HilbertUMD.Analysis.ScalarThreeDuality
-import Mathlib.MeasureTheory.Function.AEEqOfIntegral
-import Mathlib.MeasureTheory.Function.LpSpace.Indicator
+module
+
+public import HilbertUMD.Hilbert.HilbertThreeFromFour
+public import HilbertUMD.Analysis.ScalarThreeDuality
+public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
+public import Mathlib.MeasureTheory.Function.LpSpace.Indicator
+
+@[expose] public section
 
 /-!
 # An independent bounded L(3/2) Hilbert operator

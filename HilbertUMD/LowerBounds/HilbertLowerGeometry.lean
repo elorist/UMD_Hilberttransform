@@ -1,6 +1,10 @@
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.Tactic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.Tactic
+
+@[expose] public section
 
 /-! Geometric and logarithmic estimates for the summation Hilbert lower bound. -/
 

@@ -1,4 +1,8 @@
-import HilbertUMD.UMD.FiniteTreeReduction
+module
+
+public import HilbertUMD.UMD.FiniteTreeReduction
+
+@[expose] public section
 
 /-!
 # Proved complex Paley-Walsh reduction at exponent two

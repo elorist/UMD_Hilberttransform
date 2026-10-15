@@ -1,5 +1,9 @@
-import HilbertUMD.Analysis.CubicPositiveParts
-import HilbertUMD.Analysis.MixedLpNorming
+module
+
+public import HilbertUMD.Analysis.CubicPositiveParts
+public import HilbertUMD.Analysis.MixedLpNorming
+
+@[expose] public section
 
 /-! The original cubic argument through its L³ endpoint. The finite-coordinate
 Lp norming formula, restriction to nonnegative tests, square-norm identity,

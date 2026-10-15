@@ -1,8 +1,12 @@
-import HilbertUMD.Main.LowerBounds
-import HilbertUMD.Main.Transfer
-import HilbertUMD.LowerBounds.HilbertLowerConstants
-import HilbertUMD.Matrices.SummationUpperConstants
-import HilbertUMD.Matrices.SignedDyadicUpperConstants
+module
+
+public import HilbertUMD.Main.LowerBounds
+public import HilbertUMD.Main.Transfer
+public import HilbertUMD.LowerBounds.HilbertLowerConstants
+public import HilbertUMD.Matrices.SummationUpperConstants
+public import HilbertUMD.Matrices.SignedDyadicUpperConstants
+
+@[expose] public section
 
 /-! The four requested numerical alignments after transfer to X_n and Y_n. -/
 

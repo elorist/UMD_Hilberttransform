@@ -1,5 +1,9 @@
-import HilbertUMD.UMD.UMDProbabilityReduction
-import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+module
+
+public import HilbertUMD.UMD.UMDProbabilityReduction
+public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+
+@[expose] public section
 
 /-!
 # Simple terminal values suffice for the probability-space UMD tests

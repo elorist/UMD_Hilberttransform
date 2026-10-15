@@ -7,12 +7,12 @@ try {
     $taskLean = (Get-Content -LiteralPath 'lean-toolchain' -Raw).Trim()
     $taskManifest = Get-Content -LiteralPath 'lake-manifest.json' -Raw | ConvertFrom-Json
     $taskMathlib = $taskManifest.packages | Where-Object name -eq 'mathlib'
-    if ($taskLean -ne 'leanprover/lean4:v4.33.0' -or
-        $taskMathlib.rev -ne 'db584cd6d46c92f209a44c0f1c829460d327499d') {
+    if ($taskLean -ne 'leanprover/lean4:v4.35.0' -or
+        $taskMathlib.rev -ne '56a005855ea17e0b0958f73ec801ae140b0a1679') {
         throw 'The Lean or mathlib pin changed; review the dependency update deliberately.'
     }
 
-    $taskFiles = @(Get-Item -LiteralPath 'HilbertUMD.lean')
+    $taskFiles = @(Get-Item -LiteralPath 'HilbertUMD.lean', 'Solution.lean')
     $taskFiles += Get-ChildItem -LiteralPath 'HilbertUMD' -Filter '*.lean' -Recurse
     $taskModules = @{}
     foreach ($taskFile in $taskFiles) {
@@ -21,9 +21,11 @@ try {
             throw ('Unproved declaration or proof escape in ' + $taskFile.FullName)
         }
         $taskRelative = [System.IO.Path]::GetRelativePath($taskProject, $taskFile.FullName)
+        # Solution is a separate proof root, checked by the dependency audits below.
+        if ($taskRelative -eq 'Solution.lean') { continue }
         $taskName = ($taskRelative -replace '\.lean$', '') -replace '[\\/]', '.'
         $taskModules[$taskName] = @([regex]::Matches($taskSource,
-            '(?m)^import\s+(HilbertUMD(?:\.[\w]+)*)\s*$') | ForEach-Object { $_.Groups[1].Value })
+            '(?m)^(?:public\s+)?import\s+(HilbertUMD(?:\.[\w]+)*)\s*$') | ForEach-Object { $_.Groups[1].Value })
     }
     $taskSeen = [System.Collections.Generic.HashSet[string]]::new()
     $taskPending = [System.Collections.Generic.Stack[string]]::new()
@@ -65,7 +67,7 @@ try {
     $taskPreviousLeanThreads = $env:LEAN_NUM_THREADS
     try {
         $env:LEAN_NUM_THREADS = '1'
-        & lake env leanchecker -v HilbertUMD 2>&1 | Tee-Object -FilePath (Join-Path $taskLogs 'kernel.log')
+        & lake env leanchecker -v HilbertUMD Solution 2>&1 | Tee-Object -FilePath (Join-Path $taskLogs 'kernel.log')
         if ($LASTEXITCODE -ne 0) { throw 'Compiled proof kernel replay failed.' }
     } finally {
         $env:LEAN_NUM_THREADS = $taskPreviousLeanThreads
@@ -76,6 +78,7 @@ try {
         lean = $taskLean
         mathlibCommit = $taskMathlib.rev
         paperDeclaration = 'HilbertUMD.theorem_1_1'
+        comparatorDeclaration = 'HilbertUMD.Comparison.theorem_1_1'
         mainDeclaration = 'HilbertUMD.main_theorem_p2'
         quantitativeDeclaration = 'HilbertUMD.main_theorem_p2_quantitative'
         scope = 'Theorem 1.1; dimensions 2^n; n and sqrt(n); real and complex; common positive constants; all n>=1; arbitrary UMD sample universes with equal p=2 constants; internal and quantitative companions in universe zero'

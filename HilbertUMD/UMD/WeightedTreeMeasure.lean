@@ -1,4 +1,8 @@
-import HilbertUMD.UMD.WeightedBinaryTree
+module
+
+public import HilbertUMD.UMD.WeightedBinaryTree
+
+@[expose] public section
 
 /-! Representing finite laws by branching probabilities and identifying their
 weighted conditional averages. -/
@@ -147,7 +151,8 @@ theorem comp_memLp (f : Leaf n → E) : MemLp (fun x => f (φ x)) 2 μ :=
 
 include hφ in
 theorem exists_bias_map : ∃ b : Bias n, Valid b ∧ ∀ i, mass n b i = (μ.map φ).real {i} := by
-  have : IsProbabilityMeasure (μ.map φ) := Measure.isProbabilityMeasure_map hφ.aemeasurable
+  have : IsProbabilityMeasure (μ.map φ) :=
+    (Measure.isProbabilityMeasure_map_iff hφ.aemeasurable).2 inferInstance
   apply exists_bias_of_weights n (fun i => (μ.map φ).real {i})
   · intro i
     exact ENNReal.toReal_nonneg
@@ -159,7 +164,8 @@ variable (b : Bias n) (hb : ∀ i, mass n b i = (μ.map φ).real {i})
 include hφ hb in
 theorem integral_comp_eq_mean (f : Leaf n → E) :
     ∫ x, f (φ x) ∂μ = mean n b f := by
-  have : IsProbabilityMeasure (μ.map φ) := Measure.isProbabilityMeasure_map hφ.aemeasurable
+  have : IsProbabilityMeasure (μ.map φ) :=
+    (Measure.isProbabilityMeasure_map_iff hφ.aemeasurable).2 inferInstance
   have hf : Integrable f (μ.map φ) :=
     ((SimpleFunc.ofFinite f).memLp_of_isFiniteMeasure 2 (μ.map φ)).integrable (by norm_num)
   have hfm : AEStronglyMeasurable f (μ.map φ) := (SimpleFunc.ofFinite f).aestronglyMeasurable

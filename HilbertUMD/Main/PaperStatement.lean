@@ -1,5 +1,9 @@
-import HilbertUMD.Main.Statement
-import HilbertUMD.UMD.UniverseIndependence
+module
+
+public import HilbertUMD.Main.Statement
+public import HilbertUMD.UMD.UniverseIndependence
+
+@[expose] public section
 
 /-! The notation and literal depth dependence of Theorem 1.1 in the fixed
 9 September 2026 paper. The abbreviations below use the existing spaces and

@@ -1,6 +1,10 @@
-import HilbertUMD.Analysis.CubicLp
-import HilbertUMD.Analysis.ScalarLpOperators
-import HilbertUMD.Matrices.MatrixCubic
+module
+
+public import HilbertUMD.Analysis.CubicLp
+public import HilbertUMD.Analysis.ScalarLpOperators
+public import HilbertUMD.Matrices.MatrixCubic
+
+@[expose] public section
 
 /-! Actual compatible finite-matrix/scalar-operator realizations. -/
 

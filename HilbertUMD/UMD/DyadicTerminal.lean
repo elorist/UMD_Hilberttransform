@@ -1,7 +1,11 @@
-import HilbertUMD.UMD.DyadicMartingale
-import HilbertUMD.Transfer.Transfer
-import HilbertUMD.UMD.MartingaleL2
-import HilbertUMD.UMD.SampleSpaceLift
+module
+
+public import HilbertUMD.UMD.DyadicMartingale
+public import HilbertUMD.Transfer.Transfer
+public import HilbertUMD.UMD.MartingaleL2
+public import HilbertUMD.UMD.SampleSpaceLift
+
+@[expose] public section
 
 /-!
 # Finite dyadic terminal-value bounds

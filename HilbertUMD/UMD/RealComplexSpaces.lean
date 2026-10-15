@@ -1,5 +1,9 @@
-import HilbertUMD.Foundations.Spaces
-import HilbertUMD.UMD.UMDRestriction
+module
+
+public import HilbertUMD.Foundations.Spaces
+public import HilbertUMD.UMD.UMDRestriction
+
+@[expose] public section
 
 /-!
 # The real spaces inside their complex versions

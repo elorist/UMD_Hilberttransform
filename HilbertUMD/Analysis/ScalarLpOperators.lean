@@ -1,6 +1,10 @@
-import HilbertUMD.Analysis.MixedNorm
-import HilbertUMD.UMD.UMD
-import Mathlib.MeasureTheory.SpecificCodomains.Pi
+module
+
+public import HilbertUMD.Analysis.MixedNorm
+public import HilbertUMD.UMD.UMD
+public import Mathlib.MeasureTheory.SpecificCodomains.Pi
+
+@[expose] public section
 
 /-! Generic finite-coordinate amplification of actual scalar Lp operators.
 All definitions and proofs are independent of the cited analytic results. -/
@@ -27,7 +31,7 @@ theorem coordinate_insertion (μ : Measure S) (p : ℝ≥0∞) [Fact (1 ≤ p)]
   by_cases h : k = j
   · subst k
     simp [insertion, coordinate]
-  · rw [if_neg h]
+  · rw [ite_eq_right h]
     have hzero : coordinate k (insertion j (g x)) = 0 := by simp [coordinate, insertion, h]
     rw [hzero]
     exact hz.symm

@@ -1,7 +1,11 @@
-import HilbertUMD.Hilbert.HilbertPVFourier
-import HilbertUMD.Analysis.LebesgueDecayApproximation
-import Mathlib.Analysis.Calculus.BumpFunction.Convolution
-import Mathlib.Analysis.Distribution.SchwartzSpace.Deriv
+module
+
+public import HilbertUMD.Hilbert.HilbertPVFourier
+public import HilbertUMD.Analysis.LebesgueDecayApproximation
+public import Mathlib.Analysis.Calculus.BumpFunction.Convolution
+public import Mathlib.Analysis.Distribution.SchwartzSpace.Deriv
+
+@[expose] public section
 
 /-! Smooth, even test kernels and their classical Hilbert transforms. -/
 
@@ -290,9 +294,9 @@ theorem exists_error_bound : ∃ C : ℝ, 0 ≤ C ∧ ∀ y,
   refine ⟨B + Real.pi⁻¹, by positivity, ?_⟩
   intro y
   by_cases hy : |y| ≤ 1
-  · rw [if_pos hy, error, if_neg (not_lt.mpr hy), zero_sub, norm_neg]
+  · rw [ite_eq_left hy, error, ite_eq_right (not_lt.mpr hy), zero_sub, norm_neg]
     exact (norm_pv_le test.integrable hL y).trans (le_add_of_nonneg_right (by positivity))
-  · rw [if_neg hy, error, if_pos (lt_of_not_ge hy), norm_sub_rev]
+  · rw [ite_eq_right hy, error, ite_eq_left (lt_of_not_ge hy), norm_sub_rev]
     exact (pv_test_tail (le_of_lt (lt_of_not_ge hy))).trans (by gcongr; exact le_add_of_nonneg_left hB)
 
 theorem error_integrable : Integrable error := by
@@ -354,7 +358,7 @@ theorem scaledError_eq {ε : ℝ} (hε : 0 < ε) (x y : ℝ) :
     rw [lt_div_iff₀ hε, one_mul]
   simp only [he]
   by_cases hy : ε < |x - y|
-  · rw [if_pos hy, if_pos hy, inv_div]
+  · rw [ite_eq_left hy, ite_eq_left hy, inv_div]
     field_simp
   · simp [hy]
 
@@ -370,7 +374,7 @@ theorem scaledError_bound {C : ℝ} (_hC : 0 ≤ C)
   simp only [he] at hh
   by_cases hy : |x - y| ≤ ε
   · simpa only [hy, ↓reduceIte, div_eq_inv_mul] using hh
-  · rw [if_neg hy] at hh ⊢
+  · rw [ite_eq_right hy] at hh ⊢
     have hid : ε⁻¹ * (C / |(x - y) / ε| ^ 2) = C * ε / |x - y| ^ 2 := by
       rw [abs_div, abs_of_pos hε]
       field_simp

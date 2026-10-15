@@ -1,6 +1,10 @@
-import HilbertUMD.Hilbert.HilbertFourBound
-import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
+module
+
+public import HilbertUMD.Hilbert.HilbertFourBound
+public import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+
+@[expose] public section
 
 /-!
 # Compatibility of the independent L4 extension with Fourier L2
@@ -17,7 +21,7 @@ open scoped ENNReal NNReal Topology
 namespace HilbertUMD.HilbertFourCompatibility
 
 local instance : Fact ((1 : ℝ≥0∞) ≤ 4) := ⟨by norm_num⟩
-private instance : ENNReal.HolderTriple 4 4 2 := ⟨by
+instance : ENNReal.HolderTriple 4 4 2 := ⟨by
   apply (ENNReal.toReal_eq_toReal_iff' (by norm_num) (by simp)).mp
   norm_num [ENNReal.toReal_add]⟩
 
@@ -119,7 +123,7 @@ theorem eventually_cutoff_one (x : ℝ) : ∀ᶠ n : ℕ in atTop, cutoff n x = 
 
 theorem cutoff_memLp {p : ℝ≥0∞} {f : ℝ → ℝ} (hf : MemLp f p volume) (n : ℕ) :
     MemLp (fun x => cutoff n x * f x) p volume := by
-  apply hf.of_le ((cutoff n).continuous.aestronglyMeasurable.mul hf.1)
+  apply hf.of_le ((cutoff n).continuous.aestronglyMeasurable.mul hf.aestronglyMeasurable)
   filter_upwards with x
   change ‖cutoff n x * f x‖ ≤ ‖f x‖
   rw [norm_mul, Real.norm_of_nonneg (cutoff_bounds n x).1]
@@ -134,7 +138,7 @@ theorem cutoff_tendsto {p : ℕ} (hp : p ≠ 0) [Fact ((1 : ℝ≥0∞) ≤ p)]
   have hi := hf.integrable_norm_pow hp
   have hm (n : ℕ) : AEStronglyMeasurable
       (fun x => ‖cutoff n x * f x - f x‖ ^ p) volume :=
-    ((cutoff_memLp hf n).1.sub hf.1).norm.pow p
+    ((cutoff_memLp hf n).aestronglyMeasurable.sub hf.aestronglyMeasurable).norm.pow p
   have hb (n : ℕ) : ∀ᵐ x ∂volume,
       ‖‖cutoff n x * f x - f x‖ ^ p‖ ≤ ‖f x‖ ^ p := by
     filter_upwards with x

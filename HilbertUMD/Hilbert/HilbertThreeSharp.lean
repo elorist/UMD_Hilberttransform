@@ -1,6 +1,10 @@
-import HilbertUMD.Hilbert.HilbertLpCompatibility
-import HilbertUMD.Analysis.CubicEndpoint
-import HilbertUMD.Analysis.ScalarLpOperators
+module
+
+public import HilbertUMD.Hilbert.HilbertLpCompatibility
+public import HilbertUMD.Analysis.CubicEndpoint
+public import HilbertUMD.Analysis.ScalarLpOperators
+
+@[expose] public section
 
 /-! Cotlar's identity gives the scalar cubic energy exactly. The cubic
 argument then improves the existing scalar realization to norm at most 11/4. -/
@@ -17,11 +21,11 @@ theorem realHilbertThree_cubic_energy (f : Lp ℝ 3 (volume : Measure ℝ)) :
   have hp : IsHilbertPVAe f (realHilbertThree f) := by
     simpa only [Lp.toLp_coeFn] using realHilbertThree_pv f hf
   have hw : MemLp (fun t => f t * realHilbertThree f t + f t * realHilbertThree f t)
-      (3 / 2) volume := (hh.mul hf).add (hh.mul hf)
+      (3 / 2) volume := (hf.fun_mul hh).add (hf.fun_mul hh)
   have hd := Interfaces.real_hilbert_duality hf hw hp (Interfaces.cotlar_real_pv hf hf hp hp)
   have hi : Integrable (fun t => f t * (realHilbertThree f t) ^ 2) volume := by
     have hs : MemLp (fun t => realHilbertThree f t * realHilbertThree f t) (3 / 2) volume := hh.mul hh
-    simpa only [pow_two] using (memLp_one_iff_integrable.mp (hs.mul' hf))
+    simpa only [pow_two] using (memLp_one_iff_integrable.mp (hf.fun_mul hs))
   have hj : Integrable (fun t => f t ^ 3) volume := by
     have hs : MemLp (fun t => f t * f t) (3 / 2) volume := hf.mul hf
     convert memLp_one_iff_integrable.mp (hs.mul hf) using 1
@@ -46,7 +50,7 @@ private theorem singleton_l1Norm (f : CubicLp.Space (ι := Fin 1) (volume : Meas
     CubicLp.l1Norm volume 3 f = ‖(ScalarLp.coordinate (0 : Fin 1)).compLpL 3 volume f‖ := by
   rw [CubicLp.l1Norm_apply, Lp.norm_def, Lp.norm_def]
   congr 1
-  apply eLpNorm_congr_norm_ae
+  apply eLpNorm_congr_norm_ae (Lp.aestronglyMeasurable _) (Lp.aestronglyMeasurable _)
   filter_upwards [CubicLp.toL1.coeFn_compLpL f,
     (ScalarLp.coordinate (0 : Fin 1)).coeFn_compLpL f] with t hl hc
   rw [hl, hc, CubicLp.norm_toL1]

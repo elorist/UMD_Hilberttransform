@@ -1,4 +1,8 @@
-import HilbertUMD.Foundations.Dyadic
+module
+
+public import HilbertUMD.Foundations.Dyadic
+
+@[expose] public section
 
 noncomputable section
 open scoped BigOperators

@@ -1,7 +1,11 @@
-import HilbertUMD.Hilbert.HilbertPVPointwise
-import Mathlib.Analysis.Fourier.RiemannLebesgueLemma
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
+module
+
+public import HilbertUMD.Hilbert.HilbertPVPointwise
+public import Mathlib.Analysis.Fourier.RiemannLebesgueLemma
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
+
+@[expose] public section
 
 /-!
 # Scalar principal values and the Fourier Hilbert transform
@@ -346,7 +350,7 @@ theorem tendsto_fourierInv_hilbertSpectralCutoff {f : ℝ → ℂ}
   · exact .of_forall fun y => by simpa using Real.abs_cos_le_one (2 * Real.pi * R * y)
 
 def l2FrequencyCutoff (u : ComplexL2) (R : ℝ) : ComplexL2 :=
-  ((Lp.memLp u).indicator measurableSet_Ioc).toLp ((Ioc (-R) R).indicator u)
+  ((Lp.memLp u).indicator measurableSet_Ioc.nullMeasurableSet).toLp ((Ioc (-R) R).indicator u)
 
 theorem l2FrequencyCutoff_coeFn (u : ComplexL2) (R : ℝ) :
     l2FrequencyCutoff u R =ᵐ[volume] (Ioc (-R) R).indicator u :=
@@ -358,14 +362,17 @@ theorem tendsto_l2FrequencyCutoff (u : ComplexL2) :
   have heq (n : ℕ) : eLpNorm (⇑(l2FrequencyCutoff u n) - ⇑u) 2 volume =
       eLpNorm ((Ioc (-(n : ℝ)) n).indicator u - ⇑u) 2 volume :=
     eLpNorm_congr_ae ((l2FrequencyCutoff_coeFn u n).sub .rfl)
+  have hm (n : ℕ) : AEStronglyMeasurable ((Ioc (-(n : ℝ)) n).indicator u - ⇑u) volume :=
+    ((Lp.aestronglyMeasurable u).indicator measurableSet_Ioc).sub
+      (Lp.aestronglyMeasurable u)
   simp_rw [heq, eLpNorm_eq_lintegral_rpow_enorm_toReal (by norm_num : (2 : ℝ≥0∞) ≠ 0)
-    (by norm_num : (2 : ℝ≥0∞) ≠ ⊤)]
+    (by norm_num : (2 : ℝ≥0∞) ≠ ⊤) (hm _)]
   have hd : Tendsto (fun n : ℕ => ∫⁻ y,
       ‖(Ioc (-(n : ℝ)) n).indicator u y - u y‖ₑ ^ (2 : ℝ)) atTop (𝓝 0) := by
     have hfin : (∫⁻ y, ‖u y‖ₑ ^ (2 : ℝ)) ≠ ⊤ := by
       simpa using (lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top
         (by norm_num : (2 : ℝ≥0∞) ≠ 0) (by norm_num : (2 : ℝ≥0∞) ≠ ⊤)
-        (Lp.memLp u).2).ne
+        (Lp.memLp u)).ne
     convert tendsto_lintegral_of_dominated_convergence'
       (f := fun _ : ℝ => (0 : ℝ≥0∞)) (fun y => ‖u y‖ₑ ^ (2 : ℝ)) ?_ ?_ hfin ?_ using 1
     · simp only [lintegral_zero]
@@ -409,7 +416,7 @@ theorem fourierInv_l2FrequencyCutoff_ae {f : ℝ → ℂ} (hi : Integrable f) (h
     by_cases hmem : ξ ∈ Ioc (-R) R
     · simp [hmem, u, hu, hf]
     · simp [hmem]
-  exact (fourierInv_toLp_ae hq ((Lp.memLp u).indicator measurableSet_Ioc)).trans
+  exact (fourierInv_toLp_ae hq ((Lp.memLp u).indicator measurableSet_Ioc.nullMeasurableSet)).trans
     (.of_forall (Real.fourierInv_congr_ae heq))
 
 /-- Scalar principal values coincide almost everywhere with the Plancherel multiplier. -/

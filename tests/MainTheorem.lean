@@ -1,4 +1,9 @@
-import HilbertUMD
+module
+
+public import HilbertUMD
+public import Solution
+
+@[expose] public section
 
 /-! Verify the paper statement, its internal and quantitative companions,
 and every transitive proof dependency. -/
@@ -11,6 +16,11 @@ universe uΩ vΩ
 example : ∃ c C : ℝ, 0 < c ∧ 0 < C ∧ ∀ n : ℕ, 1 ≤ n →
     Paper.Theorem11Bounds.{uΩ} ℝ n c C ∧ Paper.Theorem11Bounds.{uΩ} ℂ n c C :=
   theorem_1_1.{uΩ}
+
+/-- The independently compared solution has the full paper statement. -/
+example : ∃ c C : ℝ, 0 < c ∧ 0 < C ∧ ∀ n : ℕ, 1 ≤ n →
+    Paper.Theorem11Bounds.{uΩ} ℝ n c C ∧ Paper.Theorem11Bounds.{uΩ} ℂ n c C :=
+  HilbertUMD.Comparison.theorem_1_1.{uΩ}
 
 /-- The same comparison constants work in independent universes and at concrete
 levels zero and one, with both fields checked in every universe. -/
@@ -45,6 +55,7 @@ example {𝕜 : Type*} [RCLike 𝕜] {n : ℕ} {c C : ℝ}
     h.y_hilbert_lower, h.y_hilbert_upper⟩
 
 #print axioms HilbertUMD.theorem_1_1
+#print axioms HilbertUMD.Comparison.theorem_1_1
 #print axioms HilbertUMD.umdConstant_two_universe_eq
 
 example : ∃ c C : ℝ, 0 < c ∧ 0 < C ∧ ∀ n : ℕ, 1 ≤ n →
@@ -119,14 +130,33 @@ example (n : ℕ) (hn : 1 ≤ n) :
 open Lean Elab Command in
 set_option maxHeartbeats 0 in
 run_cmd do
-  let env ← getEnv
+  -- Ordinary module imports hide theorem bodies and private declarations.
+  -- Reload the complete transitive environment at the private level, without
+  -- initializing extensions: this audit walks actual expressions, not cached
+  -- axiom summaries. A missing private object file makes the import fail.
+  let visibleEnv ← getEnv
+  let env ← liftIO <| importModules #[{ module := `HilbertUMD }, { module := `Solution }] {}
+    (loadExts := false) (level := .private)
+  if env.header.isModule then
+    throwError "The dependency audit requires unrestricted private module data"
+  if env.header.moduleNames.contains `Challenge then
+    throwError "The admitted Challenge statement must not enter the solution proof audit"
+  for imported in env.header.modules do
+    unless imported.importAll do
+      throwError "Proof bodies were not fully imported for module: {imported.module}"
+  for mod in visibleEnv.header.moduleNames do
+    if ((`HilbertUMD).isPrefixOf mod || mod == `Solution) &&
+        !env.header.moduleNames.contains mod then
+      throwError "Project module missing from the full dependency audit: {mod}"
   let mut seen : NameSet := {}
   seen := seen.insert `HilbertUMD.theorem_1_1
+  seen := seen.insert `HilbertUMD.Comparison.theorem_1_1
   seen := seen.insert `HilbertUMD.main_theorem_p2
   seen := seen.insert `HilbertUMD.main_theorem_p2_quantitative
   let mut usedModules : NameSet := {}
   let mut todo : Array Name :=
-    #[`HilbertUMD.theorem_1_1, `HilbertUMD.main_theorem_p2, `HilbertUMD.main_theorem_p2_quantitative]
+    #[`HilbertUMD.theorem_1_1, `HilbertUMD.Comparison.theorem_1_1,
+      `HilbertUMD.main_theorem_p2, `HilbertUMD.main_theorem_p2_quantitative]
   let mut index := 0
   while index < todo.size do
     let name := todo[index]!
@@ -146,8 +176,8 @@ run_cmd do
         todo := todo.push child
   let mut count : Nat := 0
   for mod in env.header.moduleNames do
-    if mod != `HilbertUMD && (`HilbertUMD).isPrefixOf mod then
+    if mod == `Solution || (mod != `HilbertUMD && (`HilbertUMD).isPrefixOf mod) then
       unless usedModules.contains mod do
         throwError "Module contributes no declarations to the main theorem: {mod}"
       count := count + 1
-  logInfo m!"PASS: full main theorem (Theorem 1.1) in arbitrary sample-space universes, internal formulation, and quantitative companion over R and C; {seen.size} transitive declarations; {count} contributing project modules; no admissions or extra axioms."
+  logInfo m!"PASS: full main theorem (Theorem 1.1) and compared Solution in arbitrary sample-space universes, internal formulation, and quantitative companion over R and C; {seen.size} transitive declarations checked from full proof bodies; {count} contributing project modules; no admissions or extra axioms."

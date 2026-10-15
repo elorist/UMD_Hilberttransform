@@ -1,5 +1,9 @@
-import HilbertUMD.Hilbert.CotlarFourier
-import HilbertUMD.Hilbert.HilbertTwoKernel
+module
+
+public import HilbertUMD.Hilbert.CotlarFourier
+public import HilbertUMD.Hilbert.HilbertTwoKernel
+
+@[expose] public section
 
 /-! Extend the Fourier Cotlar identity by Schwartz density and Hölder
 continuity. All principal-value realization assumptions are explicit. -/

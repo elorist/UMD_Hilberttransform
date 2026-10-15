@@ -2,7 +2,7 @@
 
 The reference is the [paper PDF included in this repository](../paper/Hilbert-and-UMD-arxiv-v1.pdf).
 Its authors are Emiel Lorist and Jan van Neerven.
-The certification target is **Theorem 1.1**.
+The formalized result is **Theorem 1.1**.
 
 ## Theorem 1.1
 
@@ -28,10 +28,10 @@ Sigma_N and D_n are `summation` and `signedDyadic`, or
 `summationOperator` and `signedDyadicOperator` when equipped with their
 l1-to-linfinity operator domains. Their indexing and norms agree with the paper.
 
-The internal `main_theorem_p2` uses n+1. The paper theorem converts
-its bounds using n ≤ n+1 ≤ 2n and √(n+1) ≤ 2√n, without changing the depth
-or the spaces. The same lower coefficient and twice the upper
-coefficient work simultaneously over both fields.
+The internal `main_theorem_p2` uses n+1. For n ≥ 1, the inequalities
+n ≤ n+1 ≤ 2n and √(n+1) ≤ 2√n give the paper bounds with the same lower
+coefficient and twice the upper coefficient, over both fields and without
+changing the depth or spaces.
 
 The UMD definition includes sigma-finite spaces and filtrations and every
 unimodular scalar of the selected field. The public paper theorem uses
@@ -44,8 +44,8 @@ the paper's compactly supported C¹ tests and normalization 1/pi.
 
 ## Remark 1.2 and the quantitative companion
 
-The numbers in Remark 1.2 are not the certification target.
-`main_theorem_p2_quantitative` states the following bounds.
+`main_theorem_p2_quantitative` does not reproduce all coefficients of
+Remark 1.2. It states the following bounds.
 Write delta = (2/pi) log(27/16), and let n ≥ 1.
 
 | Inequality | Paper | Public Lean quantitative theorem |
@@ -65,9 +65,8 @@ that bound through [Main/UMDBounds.lean](../HilbertUMD/Main/UMDBounds.lean)
 to the public quantitative theorem. Only the internal asymptotic assembly
 converts it to a common coefficient times n+1. For the X_n UMD lower bound,
 [SummationLower.lean](../HilbertUMD/LowerBounds/SummationLower.lean) proves an
-exact diagonal variance identity; the numerical corollary uses only
-the coarser coefficient 1/4. A short arithmetic refinement yields the paper's
-√(n/14) target.
+exact diagonal variance identity; the numerical corollary uses the
+coarser coefficient 1/4.
 
 The stronger Hilbert lower coefficient follows from
 [HilbertLowerConstants.lean](../HilbertUMD/LowerBounds/HilbertLowerConstants.lean).
@@ -87,31 +86,11 @@ uses 11/4 and 9. Lean's real cubic endpoint uses the positive-part
 factor 127/80, while other steps incur larger factors. See the
 [proof guide](PROOF.md) for the checked route through the library.
 
-## Optional extensions
-
-Theorem 1.1 is complete. Further work could sharpen the quantitative
-companion to match all of Remark 1.2, prove the extrapolation needed for
-Corollary 1.3, or formalize the general quadratic-comparison theorems.
-These are outside the certification target.
-
-The summation-witness arithmetic for beta_2(X_n) can be sharpened using
-the diagonal variance identity above. Matching the remaining coefficients
-in the table requires stronger estimates.
+The extrapolation in Corollary 1.3 and the general quadratic-comparison
+theorems are outside the formalized result.
 
 ## Verification
 
-The default build includes `theorem_1_1`, `main_theorem_p2`, and
-`main_theorem_p2_quantitative`.
-[tests/MainTheorem.lean](../tests/MainTheorem.lean) checks the dimensions,
-literal n/√n inequalities, common constants across universes, numerical
-companion, and their transitive proof
-dependencies. Only `propext`, `Classical.choice`, and `Quot.sound` are accepted.
-[tests/Definitions.lean](../tests/Definitions.lean) independently checks the
-norms, dimensions, paper abbreviations, and operator definitions.
-[tests/AxiomAudit.lean](../tests/AxiomAudit.lean) also audits all project
-declarations, including helpers outside the theorem dependency closures.
-Both verification scripts reject warnings and replay compiled project
-declarations through Lean's kernel using `leanchecker`.
-
-Run `scripts/verify.ps1` on Windows or `bash scripts/verify.sh` on Unix.
+The [proof guide](PROOF.md#verification-boundary) describes the statement,
+definition, axiom, and kernel checks and how to run them.
 The repository checker also verifies the exact SHA-256 hash of the fixed PDF.

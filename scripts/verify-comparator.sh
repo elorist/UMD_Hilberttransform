@@ -98,7 +98,6 @@ if not isinstance(config, dict):
     raise SystemExit("error: comparator.json must contain one JSON object")
 if "external_kernels" in config:
     raise SystemExit("error: external_kernels must not appear in the repository configuration")
-config.pop("enable_nanoda", None)
 config["external_kernels"] = {
     "nanoda": [f"{prefix}/bin/nanoda_bin"],
     "con-ron": [f"{prefix}/bin/con-ron"],
@@ -107,7 +106,6 @@ Path(destination).write_text(json.dumps(config, indent=2) + "\n", encoding="utf-
 PY
 
 stage='cache'
-df -h . "${TMPDIR:-/tmp}"
 # Fetch only the project's import closure; caching all of Mathlib wastes the
 # space needed by Comparator's exports and its independent kernel replays.
 cache_imports=$(python3 scripts/check_repo.py --cache-imports)

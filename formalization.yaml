@@ -3,15 +3,10 @@ version: "v0.4"
 project:
   name: "Hilbert and UMD constants: Theorem 1.1"
   description: >-
-    Formalization of Theorem 1.1 of Lorist and van Neerven's paper on the
-    sharpness of the quadratic comparisons between Hilbert transform and UMD
-    constants. For every integer n at least one, the explicitly constructed
-    real and complex Banach spaces X_n and Y_n have dimension 2^n. At p = 2,
-    the Hilbert transform constant of X_n and the UMD constant of Y_n grow
-    like n; the other two constants grow like the square root of n. One pair
-    of positive comparison constants works for both scalar fields and every
-    n. These families distinguish singular-integral and martingale-transform
-    bounds in Banach space geometry, harmonic analysis, and probability.
+    Theorem 1.1 of Lorist and van Neerven: real and complex Banach spaces
+    X_n and Y_n of dimension 2^n separate the Hilbert transform and UMD
+    constants at p = 2. Their growth rates are n and square root of n,
+    with common positive comparison constants for all n at least one.
   authors:
     - "Emiel Lorist"
     - "Jan van Neerven"
@@ -19,11 +14,9 @@ project:
     - "Emiel Lorist"
   license: "Apache-2.0"
   license_notes: >-
-    The root LICENSE covers the Lean code and repository support files,
-    including this metadata. As recorded in README.md, the bundled paper PDF,
-    README prose, and docs prose use CC-BY-4.0 under paper/LICENSE; code examples
-    in that prose are also available under Apache-2.0. Cited sources and
-    dependencies retain their own licenses.
+    Apache-2.0 covers code and repository support files. The bundled paper,
+    README and docs prose use CC-BY-4.0 under paper/LICENSE; prose code examples
+    are also available under Apache-2.0. Third-party licenses remain applicable.
 
 classification:
   arxiv: ["math.FA"]
@@ -39,26 +32,22 @@ sources:
     type: "paper"
     relationship: "formalizes"
     note: >-
-      The formal certification target is Theorem 1.1, with the explicit
-      constructions and constants defined in Sections 1.1 and 2.1. The
-      repository includes the manuscript prepared for this version at
-      paper/Hilbert-and-UMD-arxiv-v1.pdf. That bundled PDF is licensed CC-BY-4.0;
-      arXiv records its copy under its perpetual non-exclusive distribution
-      license. No claim is made that the two PDF files are byte-identical.
+      Theorem 1.1, using the constructions and definitions of Sections 1.1
+      and 2.1. The bundled manuscript is paper/Hilbert-and-UMD-arxiv-v1.pdf,
+      licensed CC-BY-4.0. The arXiv copy has its own non-exclusive distribution
+      license and is not asserted to be byte-identical.
 
 related_formalizations: []
 
 status:
   scope: >-
-    Comparator selects HilbertUMD.Comparison.theorem_1_1 only: the dimensions 2^n and all
-    eight p = 2 inequalities for the paper's X_n and Y_n over the real and
-    complex fields, with common positive universal constants. The UMD constant
-    quantifies over all sigma-finite sample spaces and sigma-finite
-    filtrations in any selected universe and all unimodular coefficients.
-    The Hilbert transform constant uses compactly supported C1 tests and the
-    principal-value normalization 1/pi. Theorem 1.1 does not claim the precise
-    coefficients of Remark 1.2 or the extrapolation to other p in Corollary 1.3.
-    The general quadratic-comparison theorems are also outside this target.
+    Theorem 1.1 only: dimensions and all eight p = 2 inequalities over both
+    scalar fields, with common positive universal constants. UMD uses all
+    sigma-finite sample spaces and filtrations in any selected universe and
+    all unimodular coefficients. The Hilbert constant uses compactly supported
+    C1 tests and principal-value normalization 1/pi. Remark 1.2's precise
+    coefficients, Corollary 1.3 and the general quadratic comparisons are
+    outside the certification target.
   # Counts cover the proof development, excluding Challenge's deliberate theorem hole.
   sorry_count: 0
   sorry_in_definitions: 0
@@ -70,38 +59,23 @@ automation:
       models: ["GPT-6 Astra"]
       framework: "Codex"
       tool_setup: >-
-        LLM-generated Lean development and repository files under human
-        direction, including documentation, scripts, tests, and configuration.
-        Lean compilation, dependency audits, and kernel replay check the
-        resulting proofs. Costs and prompt logs have not been reconstructed.
-  notes: >-
-    The repository's production disclosure names GPT-6 Astra for the whole
-    repository, not only its Lean proofs. Human authorship and responsibility
-    are recorded separately above. Automated checks establish formal proof
-    acceptance and dependency properties, not independent human assessment of
-    the paper-to-Lean correspondence.
+        The entire repository was LLM-generated under human direction,
+        including proofs, documentation, scripts, tests and configuration.
+        Lean compilation, dependency audits and kernel replay verify the proofs.
 
 fidelity:
   divergences: >-
-    The certification target uses the paper's concrete spaces, dimensions,
-    p = 2 constants, and n and square-root-of-n growth rates. Internal assembly
-    uses n+1 and proves the conversion for n at least one without changing the
-    spaces. The quantitative companion is not a claim of complete agreement
-    with Remark 1.2: its square-root upper coefficients are 285 over the reals
-    and 448 over the complexes for beta_2(X_n), and 57 for hbar_2(Y_n), compared
-    with 176, 351, and 40 in the paper. Some lower coefficients also differ.
-    The proof uses direct witnesses for the square-root lower bounds rather
-    than the paper's quadratic-comparison argument. The exact coefficient
-    comparison and scope are recorded in docs/PAPER-ALIGNMENT.md.
+    Internal bounds use n+1, with a proved conversion to the paper's n.
+    The quantitative companion differs from Remark 1.2: square-root upper
+    coefficients are 285, 448 and 57 rather than 176, 351 and 40; some lower
+    coefficients also differ. Square-root lower bounds use direct witnesses
+    instead of quadratic comparisons. See docs/PAPER-ALIGNMENT.md for the table.
 
 review:
   status: "self-assessed"
   notes: >-
-    Repository checks inspect statement specializations, definitions, source
-    admissions, and transitive dependencies, and replay compiled proofs through
-    Lean's kernel. The statement correspondence is documented in
-    docs/PAPER-ALIGNMENT.md. No separate human review of the Lean formalization
-    is claimed.
+    Automated statement, definition, axiom and kernel checks; correspondence
+    documented in docs/PAPER-ALIGNMENT.md. No independent human review claimed.
 
 alignment:
   namespace: "HilbertUMD"
@@ -111,10 +85,5 @@ alignment:
       module: "Solution"
       status: "proved"
       note: >-
-        Challenge gives the independently readable statement and its concrete
-        definitions using only trusted library imports. Solution exposes the
-        library's HilbertUMD.theorem_1_1 through a wrapper with the same type.
-        Comparator checks this exact declaration against Challenge.
-
-acknowledgements: >-
-  Lean and Mathlib supply the proof environment and foundational library.
+        Challenge states the result using only Mathlib imports. Solution proves
+        it via HilbertUMD.theorem_1_1; Comparator checks the two declarations.

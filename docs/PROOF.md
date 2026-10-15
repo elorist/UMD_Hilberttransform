@@ -1,24 +1,20 @@
 # Proof guide
 
-The public paper result is `HilbertUMD.theorem_1_1` in
+`HilbertUMD.theorem_1_1` in
 [MainTheorem.lean](../HilbertUMD/MainTheorem.lean), matching Theorem 1.1 of the
-[paper](../paper/Hilbert-and-UMD-arxiv-v1.pdf). It includes the two
+[paper](../paper/Hilbert-and-UMD-arxiv-v1.pdf), gives the two
 dimensions `2^n` and common positive constants `c, C` for all eight
 inequalities, with growth rates `n` and `√n`, for every `n ≥ 1` over both fields
 and any sample-space universe.
 
-[Main/PaperStatement.lean](../HilbertUMD/Main/PaperStatement.lean) provides
-`Paper.X`, `Paper.Y`, `Paper.hbar`, and `Paper.beta` as abbreviations of the
-existing definitions. It also proves the named dimension results
-`Paper.finrank_X` and `Paper.finrank_Y`. The conversion from
-`main_theorem_p2` uses `n ≤ n+1 ≤ 2n` and `√(n+1) ≤ 2√n`, keeping the lower
-coefficient and multiplying the upper coefficient by two. The internal
-theorem retains its `n+1` normalization.
+[Main/PaperStatement.lean](../HilbertUMD/Main/PaperStatement.lean) supplies the
+paper notation, proves the dimensions, and converts the internal
+`main_theorem_p2` from `n+1` to `n`. The [paper alignment](PAPER-ALIGNMENT.md)
+records the notation and conversion.
 
-`HilbertUMD.main_theorem_p2_quantitative` in the same file exposes the
-individual proved coefficients through `P2QuantitativeBounds`. It retains
-the linear upper bounds with coefficient 1, the UMD lower bound `2n/3`
-for `YSpace`, and both alternatives in each square-root upper bound.
+`HilbertUMD.main_theorem_p2_quantitative` exposes the individual coefficients
+through `P2QuantitativeBounds` in
+[Main/Statement.lean](../HilbertUMD/Main/Statement.lean).
 
 ## Spaces and constants
 
@@ -29,25 +25,20 @@ binary coordinate spaces and their dyadic norms.
 coordinate function space `Vec` has the sup norm; the matrix input space
 `L1Vec` uses `PiLp 1`.
 
-The paper calls the second family `Y_n`. Its definition in
-`Foundations/Spaces.lean`, the `ySpace_` declarations, and the `y_` fields in
-[Main/Statement.lean](../HilbertUMD/Main/Statement.lean) all follow that notation.
-
 [Hilbert/HilbertConstant.lean](../HilbertUMD/Hilbert/HilbertConstant.lean)
 defines the principal-value Hilbert constant on compactly supported C¹ tests.
 [UMD/UMD.lean](../HilbertUMD/UMD/UMD.lean) defines a universe-parameterized UMD
 constant using sigma-finite sample spaces and filtrations, and unimodular
-coefficients. The public paper theorem permits an arbitrary sample-space
-universe. The internal and quantitative statements still use universe zero,
-whose p = 2 constants equal those of every other universe.
+coefficients. The internal and quantitative statements use universe zero;
+the paper theorem permits an arbitrary sample-space universe.
 
 [UMD/SampleSpaceLift.lean](../HilbertUMD/UMD/SampleSpaceLift.lean) lifts a
 filtration and process to `ULift`, pushes the measure forward, and proves
-the same local martingale identities and Lp norms. This allows a UMD bound
+the same martingale identities and Lp norms. This allows a UMD bound
 from any universe to test the finite leaf spaces. The independent-sign
 argument in [UMD/DyadicTerminal.lean](../HilbertUMD/UMD/DyadicTerminal.lean)
 therefore proves the reverse dyadic reduction in every universe.
-Together with the existing forward reduction, this gives the same-constant
+Together with the forward reduction, this gives the same-constant
 equivalence in [UMD/UniverseIndependence.lean](../HilbertUMD/UMD/UniverseIndependence.lean).
 Taking infima proves `umdConstant_two_universe_eq`, including when the
 constant is infinite. `Paper.Theorem11Bounds.changeUniverse` uses that
@@ -72,17 +63,11 @@ and fills the eight fields of `P2MainBounds`.
 
 The quantitative constants are assembled in
 [Main/QuantitativeConstants.lean](../HilbertUMD/Main/QuantitativeConstants.lean).
-The strengthened interval witness in
+The interval witness in
 [LowerBounds/HilbertLowerConstants.lean](../HilbertUMD/LowerBounds/HilbertLowerConstants.lean)
 gives `(n+1)/7`, using `(n log 2 - 1)/π` at large depths and the scalar
-Hilbert isometry at small depths. The UMD upper coefficients are 285 over
-the reals and 448 over the complexes; the Hilbert upper coefficient for
-`YSpace` is 57 over either field. The [paper alignment](PAPER-ALIGNMENT.md)
-records the full constant bookkeeping.
-
-The UMD lower witness for `XSpace` retains the depth-conversion factor
-`√(n+1)/(4√2)`. The two square-root lower bounds still use the existing
-direct witnesses; their sharper paper coefficients are not asserted.
+Hilbert isometry at small depths. The [paper alignment](PAPER-ALIGNMENT.md)
+compares all proved coefficients with the paper.
 
 ## The analytic inputs
 
@@ -100,8 +85,8 @@ the energy estimates in `Matrices/`. Their scalar inputs come from two routes:
   are represented by weighted binary trees and approximated by fair dyadic
   trees to prove Paley–Walsh reduction over both scalar fields.
 
-The shared cubic argument uses weighted testing to obtain `9B` and the
-shared cubic mass of positive and negative parts to obtain the rational
+The cubic argument uses weighted testing to obtain `9B` and the
+shared cubic mass of positive and negative parts to obtain the
 endpoint factor `127/80`. After complexification and interpolation, the
 matrix coefficient is `(127/40) sqrt(9 n (2 M² + 2 P))`.
 
@@ -113,28 +98,27 @@ diagonal remainder.
 
 ## Verification boundary
 
-`import HilbertUMD` imports all three public theorems. The theorem audit in
+`import HilbertUMD` imports all three public theorems. The audit in
 [tests/MainTheorem.lean](../tests/MainTheorem.lean) checks their types, expands
 the literal paper fields independently of the abbreviations, checks common
-constants across independent and concrete sample-space universes, and walks
-declaration types and proof bodies from all three roots transitively. It rejects admissions,
-nonstandard axioms, and mathematical imports that contribute no declarations.
-The verification script also checks that every library source is reachable
-from the public import. Supporting declarations needed during elaboration
-remain even when their names disappear from the final proof term.
+constants across independent and concrete sample-space universes, and traverses
+their proof dependencies, including the comparison wrapper in `Solution`.
+It rejects admissions, nonstandard axioms, and library modules that contribute
+no declarations. The verification scripts also check that every library source
+is reachable from the public import.
 
-[tests/AxiomAudit.lean](../tests/AxiomAudit.lean) separately audits every
-declaration from a project module or in the `HilbertUMD` namespace, including
-private helpers. It walks all of their transitive dependencies with the same
-axiom allowlist. This covers declarations beyond the three theorem roots.
+[tests/AxiomAudit.lean](../tests/AxiomAudit.lean) audits every project declaration,
+including private helpers and declarations outside the theorem dependency
+closures. Both audits inspect full proof bodies and allow only `propext`,
+`Classical.choice`, and `Quot.sound`.
+[tests/Definitions.lean](../tests/Definitions.lean) checks the norms, dimensions,
+paper abbreviations, and operator definitions.
 
-Both verification scripts treat build and test warnings as errors and use
-`leanchecker` to replay the compiled declarations of every project module
-through Lean's kernel. Kernel replay uses one worker to limit memory consumption.
-It complements the statement, definition, source-reachability and axiom checks.
-The GitHub workflow runs the scripts on Linux and Windows and uploads their
-reports. Cache reuse never skips the audits or kernel replay.
+Run `scripts/verify.ps1` on Windows or `bash scripts/verify.sh` on Unix. Both
+treat warnings as errors and use `leanchecker` to replay the compiled project
+declarations through Lean's kernel, with one worker to limit memory use.
+The GitHub workflow runs these checks on Linux and Windows and saves the
+reports. Cache reuse does not skip audits or kernel replay.
 
-The certification target is Theorem 1.1. Extrapolation in Corollary 1.3 and
-the full numerical Remark 1.2 are optional extensions. The direct lower-bound
-proofs also differ from the paper's final use of classical quadratic comparisons.
+The [paper alignment](PAPER-ALIGNMENT.md#proof-methods-and-scope) records the
+differences in proof methods and the limits of the formalized result.
